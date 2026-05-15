@@ -38,16 +38,16 @@
 }
 
 body.light {
-  --bg:      #e6e3dd;
-  --card:    #dedad2;
-  --border:  #c8c3bb;
+  --bg:      #c8c4bc;
+  --card:    #dedad4;
+  --border:  #b0aba3;
   --text:    #1a1918;
-  --muted:   #918c85;
-  --dim:     #6e6a63;
-  --dot:     rgba(0,0,0,0.055);
-  --tl:      rgba(0,0,0,0.08);
-  --tl-text: rgba(0,0,0,0.45);
-  --tl-line: rgba(0,0,0,0.18);
+  --muted:   #7a756e;
+  --dim:     #5c5850;
+  --dot:     rgba(0,0,0,0.07);
+  --tl:      rgba(0,0,0,0.10);
+  --tl-text: rgba(0,0,0,0.50);
+  --tl-line: rgba(0,0,0,0.22);
   --self:    #c0456e;
 
   --org-bg:    #dfe8f8;
@@ -96,7 +96,7 @@ nav {
   border-bottom: 1px solid var(--border);
   transition: background 0.5s, border-color 0.4s;
 }
-body.light nav { background: rgba(230,227,221,0.88); }
+body.light nav { background: rgba(200,196,188,0.88); }
 
 .nav-name {
   font-family: var(--mono);
@@ -724,7 +724,7 @@ body.light .card-footer { border-top-color: rgba(0,0,0,0.06); }
   backdrop-filter: blur(12px);
   transition: background 0.5s, border-color 0.4s;
 }
-body.light .ticker-bar { background: rgba(230,227,221,0.88); }
+body.light .ticker-bar { background: rgba(200,196,188,0.88); }
 
 .ticker-inner {
   display: flex; white-space: nowrap;
@@ -832,7 +832,7 @@ body.light #exp-bar { background: rgba(222,218,210,0.95); }
   border-bottom: 1px solid var(--border);
   transition: background 0.5s, border-color 0.4s;
 }
-body.light #pf-header { background: rgba(230,227,221,0.88); }
+body.light #pf-header { background: rgba(200,196,188,0.88); }
 
 .pf-title-label {
   font-family: var(--mono); font-size: 11px; letter-spacing: 0.14em;
@@ -883,6 +883,41 @@ body.light #pf-header { background: rgba(230,227,221,0.88); }
   transform: translate(-50%, -50%);
   border: 1.5px solid var(--bg); transition: border-color 0.4s;
 }
+
+/* ── PORTFOLIO CARD EXPANDER ─────────────────────────────── */
+#pf-exp {
+  position: absolute; top: 0; right: 0; bottom: 0;
+  width: 360px; z-index: 10;
+  background: var(--card); border-left: 1px solid var(--border);
+  display: flex; flex-direction: column;
+  transform: translateX(100%);
+  transition: transform 0.32s cubic-bezier(0.4,0,0.2,1), background 0.4s, border-color 0.4s;
+  overflow: hidden;
+}
+#pf-exp.on { transform: translateX(0); }
+#pf-exp-bar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 18px; height: 48px; flex-shrink: 0;
+  border-bottom: 1px solid var(--border); transition: border-color 0.4s;
+  font-family: var(--mono); font-size: 9px; letter-spacing: 0.14em;
+  text-transform: uppercase; color: var(--dim);
+}
+#pf-exp-x {
+  font-family: var(--mono); background: none; border: 1px solid var(--border);
+  color: var(--dim); width: 26px; height: 26px;
+  border-radius: 4px; cursor: pointer; font-size: 14px; line-height: 1;
+  display: flex; align-items: center; justify-content: center;
+  transition: color 0.2s, border-color 0.2s, background 0.4s;
+}
+#pf-exp-x:hover { color: var(--text); border-color: var(--text); }
+#pf-exp-img { flex-shrink: 0; overflow: hidden; max-height: 220px; }
+#pf-exp-img img { width: 100%; height: 220px; object-fit: cover; display: block; }
+#pf-exp-body { padding: 22px 20px 32px; display: flex; flex-direction: column; gap: 14px; overflow-y: auto; }
+#pf-exp-cat { display: flex; align-items: center; gap: 8px; font-family: var(--mono); font-size: 9px; letter-spacing: 0.16em; text-transform: uppercase; }
+#pf-exp-title { font-size: 18px; font-weight: 700; line-height: 1.25; letter-spacing: -0.01em; }
+#pf-exp-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+#pf-exp-tags .tag-pill { font-size: 10px; padding: 3px 8px; }
+#pf-exp-text { font-size: 13px; color: var(--dim); line-height: 1.8; }
 
 /* ── ABOUT PANEL ──────────────────────────────────────────── */
 #about-panel {
@@ -1095,6 +1130,20 @@ body.light #about-bg { background: rgba(0,0,0,0.45); }
       </div>
     </div>
   </div>
+  <!-- Portfolio card detail panel -->
+  <div id="pf-exp">
+    <div id="pf-exp-bar">
+      <span id="pf-exp-label"></span>
+      <button id="pf-exp-x" onclick="closePfExp()">×</button>
+    </div>
+    <div id="pf-exp-img"></div>
+    <div id="pf-exp-body">
+      <div id="pf-exp-cat"></div>
+      <h2 id="pf-exp-title"></h2>
+      <div id="pf-exp-tags"></div>
+      <p id="pf-exp-text"></p>
+    </div>
+  </div>
 </div>
 
 <!-- ABOUT -->
@@ -1129,7 +1178,15 @@ const POSTS = [
     title:'De organisatie zonder middenmanagement',
     date:'14 Mei 2026', year:2026, q:2, month:5, day:14, read:'7 min',
     img:'https://images.unsplash.com/photo-1497366754035-f200968a6e72?w=900&q=80',
-    body:`<p>Steeds meer bedrijven schrappen managementlagen die decennialang als vanzelfsprekend golden. Niet als bezuiniging, maar als architectuurkeuze.</p><p>Van Buurtzorg tot Haier: de patronen zijn opvallend consistent. Autonomie vergroot snelheid. Maar wat verdwijnt er ook?</p>`
+    body:`<p>Steeds meer bedrijven schrappen managementlagen die decennialang als vanzelfsprekend golden. Niet als bezuiniging, maar als architectuurkeuze.</p><p>Van Buurtzorg tot Haier: de patronen zijn opvallend consistent. Autonomie vergroot snelheid. Maar wat verdwijnt er ook?</p>`,
+    tr:{
+      en:{ label:'Org. Innovation', title:'The organisation without middle management',
+           body:`<p>More and more companies are cutting management layers that were long taken for granted — not as a cost-saving measure, but as a deliberate architectural choice.</p><p>From Buurtzorg to Haier: the patterns are remarkably consistent. Autonomy increases speed. But what is also lost in the process?</p>` },
+      es:{ label:'Innov. Organ.', title:'La organización sin mandos intermedios',
+           body:`<p>Cada vez más empresas eliminan capas de gestión que durante décadas se dieron por sentadas. No como recorte, sino como decisión de arquitectura organizacional.</p><p>De Buurtzorg a Haier: los patrones son llamativamente consistentes. La autonomía acelera. Pero ¿qué se pierde también?</p>` },
+      zh:{ label:'组织创新', title:'没有中层管理的组织',
+           body:`<p>越来越多的企业正在裁撤几十年来被视为理所当然的管理层级——不是为了削减成本，而是作为一种主动的架构选择。</p><p>从Buurtzorg到海尔：规律惊人地一致。自主权提升了速度。但与此同时，又失去了什么？</p>` },
+    }
   },
   {
     id:1, cat:'art', label:'Art', color:'var(--art)', bg:'var(--art-bg)',
@@ -1137,7 +1194,15 @@ const POSTS = [
     title:'Ryoji Ikeda: data als zintuigelijke ervaring',
     date:'22 Mrt 2026', year:2026, q:1, month:3, day:22, read:'5 min',
     img:'https://images.unsplash.com/photo-1549490349-8643362247b5?w=900&q=80',
-    body:`<p>Wat gebeurt er als je terabytes aan data omzet in licht en geluid? Ryoji Ikeda doet het, en het resultaat is tegelijk overweldigend en precies.</p><p>Over datavisualisatie, aandacht en de grenzen van menselijke perceptie.</p>`
+    body:`<p>Wat gebeurt er als je terabytes aan data omzet in licht en geluid? Ryoji Ikeda doet het, en het resultaat is tegelijk overweldigend en precies.</p><p>Over datavisualisatie, aandacht en de grenzen van menselijke perceptie.</p>`,
+    tr:{
+      en:{ label:'Art', title:'Ryoji Ikeda: data as sensory experience',
+           body:`<p>What happens when you convert terabytes of data into light and sound? Ryoji Ikeda does exactly that, and the result is simultaneously overwhelming and precise.</p><p>On data visualisation, attention, and the limits of human perception.</p>` },
+      es:{ label:'Arte', title:'Ryoji Ikeda: los datos como experiencia sensorial',
+           body:`<p>¿Qué ocurre cuando conviertes terabytes de datos en luz y sonido? Ryoji Ikeda lo hace, y el resultado es a la vez abrumador y exacto.</p><p>Sobre visualización de datos, atención y los límites de la percepción humana.</p>` },
+      zh:{ label:'艺术', title:'Ryoji Ikeda：数据作为感官体验',
+           body:`<p>将数以TB计的数据转化为光与声音，会发生什么？Ryoji Ikeda正是这样做的，结果既令人震撼，又精确无比。</p><p>关于数据可视化、注意力，以及人类感知的边界。</p>` },
+    }
   },
   {
     id:2, cat:'impact', label:'Social Impact', color:'var(--impact)', bg:'var(--impact-bg)',
@@ -1145,7 +1210,15 @@ const POSTS = [
     title:'Buurtcoöperaties en energiearmoede in Nederlandse wijken',
     date:'9 Apr 2026', year:2026, q:2, month:4, day:9, read:'9 min',
     img:'https://images.unsplash.com/photo-1559027615-cd4628902d4a?w=900&q=80',
-    body:`<p>In Rotterdam-Zuid, Kanaleneiland en de Schilderswijk groeit iets wat tien jaar geleden nog ondenkbaar leek. Gemiddeld 340 euro besparing per huishouden per jaar. Maar het echte verhaal gaat over eigenaarschap.</p>`
+    body:`<p>In Rotterdam-Zuid, Kanaleneiland en de Schilderswijk groeit iets wat tien jaar geleden nog ondenkbaar leek. Gemiddeld 340 euro besparing per huishouden per jaar. Maar het echte verhaal gaat over eigenaarschap.</p>`,
+    tr:{
+      en:{ label:'Social Impact', title:'Neighbourhood cooperatives and energy poverty in Dutch districts',
+           body:`<p>In Rotterdam-Zuid, Kanaleneiland and the Schilderswijk, something is growing that would have been unthinkable ten years ago. An average saving of €340 per household per year. But the real story is about ownership.</p>` },
+      es:{ label:'Impacto Social', title:'Cooperativas vecinales y pobreza energética en barrios neerlandeses',
+           body:`<p>En Rotterdam-Zuid, Kanaleneiland y el Schilderswijk crece algo que hace diez años parecía impensable. Un ahorro medio de 340 euros por hogar al año. Pero la verdadera historia es sobre la titularidad.</p>` },
+      zh:{ label:'社会影响', title:'荷兰社区合作社与能源贫困',
+           body:`<p>在鹿特丹南区、卡纳伦岛和席尔德斯维克，正在生长着十年前难以想象的事物。每户家庭平均每年节省340欧元。但真正的故事，关乎的是所有权。</p>` },
+    }
   },
   {
     id:3, cat:'sport', label:'Sport', color:'var(--sport)', bg:'var(--sport-bg)',
@@ -1153,7 +1226,15 @@ const POSTS = [
     title:'Ultra-running als metafoor voor organisatieverandering',
     date:'1 Mrt 2026', year:2026, q:1, month:3, day:1, read:'6 min',
     img:'https://images.unsplash.com/photo-1571008887538-b36bb32f4571?w=900&q=80',
-    body:`<p>Kilometer 74. Je lichaam zegt stop. Je hoofd weet dat er nog 26 te gaan zijn. De parallellen met organisatieverandering zijn scherper dan ik had gedacht.</p>`
+    body:`<p>Kilometer 74. Je lichaam zegt stop. Je hoofd weet dat er nog 26 te gaan zijn. De parallellen met organisatieverandering zijn scherper dan ik had gedacht.</p>`,
+    tr:{
+      en:{ label:'Sport', title:'Ultra-running as a metaphor for organisational change',
+           body:`<p>Kilometre 74. Your body says stop. Your mind knows there are still 26 to go. The parallels with organisational change are sharper than I had anticipated.</p>` },
+      es:{ label:'Deporte', title:'El ultramaratón como metáfora del cambio organizacional',
+           body:`<p>Kilómetro 74. Tu cuerpo dice para. Tu mente sabe que quedan 26. Los paralelismos con el cambio organizacional son más nítidos de lo que habría imaginado.</p>` },
+      zh:{ label:'体育', title:'超级马拉松作为组织变革的隐喻',
+           body:`<p>第74公里。身体说：停下。大脑却知道还有26公里要跑。这与组织变革之间的平行关系，比我预想的更加深刻。</p>` },
+    }
   },
   {
     id:4, cat:'impact', label:'Social Impact', color:'var(--impact)', bg:'var(--impact-bg)',
@@ -1161,7 +1242,15 @@ const POSTS = [
     title:'Impact investing gedemystificeerd',
     date:'10 Jan 2026', year:2026, q:1, month:1, day:10, read:'11 min',
     img:'https://images.unsplash.com/photo-1532629345422-7515f3d16bb6?w=900&q=80',
-    body:`<p>Niet elk fonds dat zichzelf "impact" noemt investeert in verandering. Maar er zijn ook fondsen die het serieus nemen. Die trade-offs accepteren. Hoe onderscheid je ze?</p>`
+    body:`<p>Niet elk fonds dat zichzelf "impact" noemt investeert in verandering. Maar er zijn ook fondsen die het serieus nemen. Die trade-offs accepteren. Hoe onderscheid je ze?</p>`,
+    tr:{
+      en:{ label:'Social Impact', title:'Impact investing demystified',
+           body:`<p>Not every fund that calls itself "impact" actually invests in change. But there are funds that take it seriously — that accept trade-offs. How do you tell them apart?</p>` },
+      es:{ label:'Impacto Social', title:'La inversión de impacto desmitificada',
+           body:`<p>No todo fondo que se llama a sí mismo "de impacto" invierte realmente en el cambio. Pero hay fondos que sí se lo toman en serio, que aceptan las compensaciones. ¿Cómo distinguirlos?</p>` },
+      zh:{ label:'社会影响', title:'影响力投资揭秘',
+           body:`<p>并非每一个自称"影响力"的基金都真正投资于变革。但也有基金认真对待这件事，愿意接受取舍。你如何分辨它们？</p>` },
+    }
   },
   {
     id:5, cat:'org', label:'Org. Innovatie', color:'var(--org)', bg:'var(--org-bg)',
@@ -1169,7 +1258,15 @@ const POSTS = [
     title:'Coöperatieven in de platformeconomie',
     date:'14 Feb 2026', year:2026, q:1, month:2, day:14, read:'8 min',
     img:'https://images.unsplash.com/photo-1542744173-8e7e53415bb0?w=900&q=80',
-    body:`<p>Fairbnb is geen app. Het is een argument dat de logica van het platform fundamenteel anders kan worden ingericht. Is dit een utopie? Of gewoon goed ontwerp?</p>`
+    body:`<p>Fairbnb is geen app. Het is een argument dat de logica van het platform fundamenteel anders kan worden ingericht. Is dit een utopie? Of gewoon goed ontwerp?</p>`,
+    tr:{
+      en:{ label:'Org. Innovation', title:'Cooperatives in the platform economy',
+           body:`<p>Fairbnb is not an app. It is an argument that the logic of the platform can be fundamentally redesigned. Is this a utopia? Or simply good design?</p>` },
+      es:{ label:'Innov. Organ.', title:'Cooperativas en la economía de plataforma',
+           body:`<p>Fairbnb no es una aplicación. Es un argumento de que la lógica de la plataforma puede configurarse de manera radicalmente diferente. ¿Es esto una utopía? ¿O simplemente buen diseño?</p>` },
+      zh:{ label:'组织创新', title:'平台经济中的合作社',
+           body:`<p>Fairbnb不是一款应用程序。它是一个论点——平台的逻辑可以从根本上以不同方式构建。这是乌托邦？还是纯粹的好设计？</p>` },
+    }
   },
   {
     id:6, cat:'art', label:'Art', color:'var(--art)', bg:'var(--art-bg)',
@@ -1177,7 +1274,15 @@ const POSTS = [
     title:'Het nieuwe mecenaat: wat bedrijven van de Medici kunnen leren',
     date:'28 Jan 2026', year:2026, q:1, month:1, day:28, read:'7 min',
     img:'https://images.unsplash.com/photo-1518998053901-5348d3961a04?w=900&q=80',
-    body:`<p>Lorenzo de Medici financierde Michelangelo niet om zijn logo op het Sixtijnse Plafond te zetten. Hoe verhoudt dat zich tot het corporate sponsorship van 2026?</p>`
+    body:`<p>Lorenzo de Medici financierde Michelangelo niet om zijn logo op het Sixtijnse Plafond te zetten. Hoe verhoudt dat zich tot het corporate sponsorship van 2026?</p>`,
+    tr:{
+      en:{ label:'Art', title:'The new patronage: what companies can learn from the Medici',
+           body:`<p>Lorenzo de Medici did not fund Michelangelo to put his logo on the Sistine Ceiling. How does that compare to corporate sponsorship in 2026?</p>` },
+      es:{ label:'Arte', title:'El nuevo mecenazgo: lo que las empresas pueden aprender de los Médici',
+           body:`<p>Lorenzo de Médici no financió a Miguel Ángel para poner su logo en el techo de la Capilla Sixtina. ¿Cómo se compara eso con el patrocinio corporativo de 2026?</p>` },
+      zh:{ label:'艺术', title:'新赞助模式：企业能从美第奇家族学到什么',
+           body:`<p>洛伦佐·德·美第奇资助米开朗基罗，并非为了在西斯廷天顶上印自己的标志。这与2026年的企业赞助相比，意味着什么？</p>` },
+    }
   },
   {
     id:7, cat:'sport', label:'Sport', color:'var(--sport)', bg:'var(--sport-bg)',
@@ -1185,7 +1290,15 @@ const POSTS = [
     title:'Veldrijden en veerkracht: de cross als sociale lijm',
     date:'2 Dec 2025', year:2025, q:4, month:12, day:2, read:'5 min',
     img:'https://images.unsplash.com/photo-1517649763962-0c623066013b?w=900&q=80',
-    body:`<p>Op een koude januarizondag staan er 4.000 mensen langs een modderig parcours in een dorp van 800 inwoners. De cross is een van de weinige plekken waar generaties en klassen naast elkaar staan zonder agenda.</p>`
+    body:`<p>Op een koude januarizondag staan er 4.000 mensen langs een modderig parcours in een dorp van 800 inwoners. De cross is een van de weinige plekken waar generaties en klassen naast elkaar staan zonder agenda.</p>`,
+    tr:{
+      en:{ label:'Sport', title:'Cyclocross and resilience: the cross as social glue',
+           body:`<p>On a cold Sunday in January, 4,000 people line a muddy course in a village of 800 inhabitants. The cyclocross is one of the few places where generations and social classes stand side by side without an agenda.</p>` },
+      es:{ label:'Deporte', title:'El ciclocross y la resiliencia: la carrera como pegamento social',
+           body:`<p>En un frío domingo de enero, 4.000 personas se alinean junto a un circuito embarrado en un pueblo de 800 habitantes. El ciclocross es uno de los pocos lugares donde generaciones y clases sociales conviven sin agenda.</p>` },
+      zh:{ label:'体育', title:'越野自行车与韧性：越野赛作为社会纽带',
+           body:`<p>在一个寒冷的周日，4000人聚集在一个800人小村庄的泥泞赛道旁。越野自行车赛是少数几个让不同代际与阶层无拘无束地并肩而立的场合之一。</p>` },
+    }
   },
   {
     id:8, cat:'org', label:'Org. Innovatie', color:'var(--org)', bg:'var(--org-bg)',
@@ -1193,7 +1306,15 @@ const POSTS = [
     title:'AI als collega: hoe mensgerichte organisaties de transitie navigeren',
     date:'18 Nov 2025', year:2025, q:4, month:11, day:18, read:'10 min',
     img:'https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=900&q=80',
-    body:`<p>Er zijn twee soorten organisaties bezig met AI: wie vervangt en wie verbetert. De uitkomsten zijn al zichtbaar — en verrassend voorspelbaar.</p>`
+    body:`<p>Er zijn twee soorten organisaties bezig met AI: wie vervangt en wie verbetert. De uitkomsten zijn al zichtbaar — en verrassend voorspelbaar.</p>`,
+    tr:{
+      en:{ label:'Org. Innovation', title:'AI as colleague: how human-centred organisations navigate the transition',
+           body:`<p>There are two kinds of organisations working with AI: those that replace and those that augment. The outcomes are already visible — and surprisingly predictable.</p>` },
+      es:{ label:'Innov. Organ.', title:'La IA como colega: cómo las organizaciones centradas en personas navegan la transición',
+           body:`<p>Hay dos tipos de organizaciones que trabajan con IA: las que reemplazan y las que mejoran. Los resultados ya son visibles — y sorprendentemente predecibles.</p>` },
+      zh:{ label:'组织创新', title:'AI作为同事：以人为本的组织如何驾驭转型',
+           body:`<p>与AI共事的组织有两种：一种是替代人，另一种是增强人。结果已经显现——而且出奇地可预测。</p>` },
+    }
   },
   {
     id:9, cat:'impact', label:'Social Impact', color:'var(--impact)', bg:'var(--impact-bg)',
@@ -1202,7 +1323,15 @@ const POSTS = [
     date:'20 Mrt 2026', year:2026, q:1, month:3, day:20, read:'18 min video',
     img:'https://images.unsplash.com/photo-1528605248644-14dd04022da1?w=900&q=80',
     videoUrl:'https://www.youtube.com/embed/dQw4w9WgXcQ',
-    body:`<p>Een openhartig gesprek over wat sociale innovatie in de praktijk betekent — de successen, de tegenslagen en de lessen die je alleen in het veld leert.</p>`
+    body:`<p>Een openhartig gesprek over wat sociale innovatie in de praktijk betekent — de successen, de tegenslagen en de lessen die je alleen in het veld leert.</p>`,
+    tr:{
+      en:{ label:'Social Impact', title:'Conversation: social innovation in practice',
+           body:`<p>A candid conversation about what social innovation actually means in practice — the successes, the setbacks, and the lessons you can only learn in the field.</p>` },
+      es:{ label:'Impacto Social', title:'Conversación: la innovación social en la práctica',
+           body:`<p>Una conversación sincera sobre lo que significa realmente la innovación social en la práctica — los éxitos, los contratiempos y las lecciones que solo se aprenden sobre el terreno.</p>` },
+      zh:{ label:'社会影响', title:'对话：社会创新的实践',
+           body:`<p>一次坦诚的对话，探讨社会创新在实践中真正意味着什么——成功、挫折，以及只有在现场才能学到的教训。</p>` },
+    }
   },
 ];
 
@@ -1522,7 +1651,12 @@ function openExp(cardEl) {
   currentPost = post;
   const rect = cardEl.getBoundingClientRect();
 
-  document.getElementById('exp-label').textContent = post.label + ' — ' + post.date;
+  // Store post id on expander so setLanguage can update it live
+  document.getElementById('expander').dataset.postId = post.id;
+
+  const tr = postTr(post, currentLang);
+  const dateStr = formatDate(post, currentLang);
+  document.getElementById('exp-label').textContent = tr.label + ' — ' + dateStr;
 
   // Show image or video
   const expImg   = document.getElementById('exp-img');
@@ -1538,14 +1672,14 @@ function openExp(cardEl) {
     expVideo.src = '';
   }
 
-  document.getElementById('exp-cat').innerHTML = `<span class="exp-dot" style="background:${post.color}"></span><span style="color:${post.color}">${post.label}</span>`;
-  document.getElementById('exp-title').textContent = post.title;
-  document.getElementById('exp-meta').innerHTML = `<span>${post.date}</span><span>·</span><span>${post.read}</span>`;
-  document.getElementById('exp-text').innerHTML = post.body;
+  document.getElementById('exp-cat').innerHTML = `<span class="exp-dot" style="background:${post.color}"></span><span style="color:${post.color}">${tr.label}</span>`;
+  document.getElementById('exp-title').textContent = tr.title;
+  document.getElementById('exp-meta').innerHTML = `<span>${dateStr}</span><span>·</span><span>${post.read}</span>`;
+  document.getElementById('exp-text').innerHTML = tr.body;
 
   // Reset share button
   const copyBtn = document.getElementById('share-copy');
-  if (copyBtn) { copyBtn.classList.remove('copied'); copyBtn.textContent = ''; copyBtn.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Link kopiëren`; }
+  if (copyBtn) { copyBtn.classList.remove('copied'); copyBtn.textContent = ''; copyBtn.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> ${(LANG[currentLang]||LANG.en).copyLink}`; }
 
   expander.style.borderTopColor = post.color;
 
@@ -1841,7 +1975,8 @@ let _pfTypewriter = null;
     // Photo card — same structure as blog photo cards
     const el = document.createElement('div');
     el.className = 'card card-photo';
-    el.dataset.cat = proj.cat;
+    el.dataset.cat  = proj.cat;
+    el.dataset.pfId = proj.id;
     el.style.cssText = `width:${CARD_W}px; left:${cx}px; top:${Math.round(cy - 130)}px;
                         z-index:${i + 1}; animation-delay:${i * 0.07}s;`;
 
@@ -1873,47 +2008,74 @@ let _pfTypewriter = null;
   });
 
   // ── Drag & Resize for portfolio cards ──
-  let pfDrag = null, pfResz = null;
-
   scrollEl.addEventListener('mousedown', e => {
-    e.preventDefault();
+    // Resize handle
     if (e.target.closest('.resize-handle')) {
       const card = e.target.closest('.card');
       if (!pfCardEls.includes(card)) return;
-      pfResz = { el: card, startX: e.clientX, startW: card.offsetWidth };
+      e.preventDefault();
+      const thumb = card.querySelector('.thumb');
+      const state = {
+        el: card, thumb,
+        startX: e.clientX, startY: e.clientY,
+        startW: card.offsetWidth,
+        startH: thumb ? thumb.offsetHeight : 0,
+      };
       document.body.style.cursor = 'nwse-resize';
+
+      function onMove(ev) {
+        ev.preventDefault();
+        const dw = ev.clientX - state.startX;
+        const dh = ev.clientY - state.startY;
+        state.el.style.width = Math.max(200, state.startW + dw) + 'px';
+        if (state.thumb) {
+          state.thumb.style.height = Math.max(80, state.startH + dh) + 'px';
+        }
+      }
+      function onUp() {
+        document.body.style.cursor = '';
+        document.removeEventListener('mousemove', onMove);
+        document.removeEventListener('mouseup', onUp);
+      }
+      document.addEventListener('mousemove', onMove);
+      document.addEventListener('mouseup', onUp);
       return;
     }
+
+    // Drag card
     const card = e.target.closest('.card');
     if (!card || !pfCardEls.includes(card)) return;
+    e.preventDefault();
     let maxZ = 0;
     pfCardEls.forEach(c => { maxZ = Math.max(maxZ, parseInt(c.style.zIndex) || 0); });
     card.style.zIndex = maxZ + 1;
     const rect = card.getBoundingClientRect();
-    pfDrag = {
+    const state = {
       el: card, moved: false,
       ox: e.clientX - rect.left, oy: e.clientY - rect.top,
       sx: e.clientX,             sy: e.clientY,
     };
     card.classList.add('dragging');
-  });
 
-  window.addEventListener('mousemove', e => {
-    if (pfResz) {
-      pfResz.el.style.width = Math.max(200, pfResz.startW + (e.clientX - pfResz.startX)) + 'px';
-      return;
+    function onMove(ev) {
+      ev.preventDefault();
+      if (Math.hypot(ev.clientX - state.sx, ev.clientY - state.sy) > 4) state.moved = true;
+      if (!state.moved) return;
+      const ir = innerEl.getBoundingClientRect();
+      state.el.style.left = (ev.clientX - ir.left - state.ox) + 'px';
+      state.el.style.top  = (ev.clientY - ir.top  - state.oy + scrollEl.scrollTop) + 'px';
     }
-    if (!pfDrag) return;
-    if (Math.hypot(e.clientX - pfDrag.sx, e.clientY - pfDrag.sy) > 4) pfDrag.moved = true;
-    if (!pfDrag.moved) return;
-    const ir = innerEl.getBoundingClientRect();
-    pfDrag.el.style.left = (e.clientX - ir.left - pfDrag.ox) + 'px';
-    pfDrag.el.style.top  = (e.clientY - ir.top  - pfDrag.oy + scrollEl.scrollTop) + 'px';
-  });
-
-  window.addEventListener('mouseup', () => {
-    if (pfResz) { document.body.style.cursor = ''; pfResz = null; return; }
-    if (pfDrag) { pfDrag.el.classList.remove('dragging'); pfDrag = null; }
+    function onUp() {
+      state.el.classList.remove('dragging');
+      document.removeEventListener('mousemove', onMove);
+      document.removeEventListener('mouseup', onUp);
+      if (!state.moved) {
+        const proj = PORTFOLIO_PROJECTS.find(p => p.id === state.el.dataset.pfId);
+        if (proj) openPfExp(proj);
+      }
+    }
+    document.addEventListener('mousemove', onMove);
+    document.addEventListener('mouseup', onUp);
   });
 })();
 
@@ -1922,7 +2084,26 @@ function openPortfolio() {
   // Start typewriter with a short delay after the panel fades in
   setTimeout(() => { if (_pfTypewriter) _pfTypewriter(); }, 350);
 }
-function closePortfolio() { document.getElementById('portfolio-panel').classList.remove('on'); }
+function closePortfolio() {
+  closePfExp();
+  document.getElementById('portfolio-panel').classList.remove('on');
+}
+
+function openPfExp(proj) {
+  document.getElementById('pf-exp-label').textContent = proj.label;
+  document.getElementById('pf-exp-cat').innerHTML =
+    `<span class="exp-dot" style="background:${proj.color}"></span><span style="color:${proj.color}">${proj.label}</span>`;
+  document.getElementById('pf-exp-title').textContent = proj.title;
+  document.getElementById('pf-exp-tags').innerHTML =
+    proj.tags.map(tag => `<span class="tag-pill" style="background:color-mix(in srgb,${proj.color} 13%,transparent);color:${proj.color}">${tag}</span>`).join('');
+  document.getElementById('pf-exp-text').textContent = proj.desc;
+  document.getElementById('pf-exp-img').innerHTML =
+    proj.img ? `<img src="${proj.img}" alt="" draggable="false">` : '';
+  document.getElementById('pf-exp').classList.add('on');
+}
+function closePfExp() {
+  document.getElementById('pf-exp').classList.remove('on');
+}
 
 // ════════════════════════════════════════════════════════════
 // ABOUT
@@ -2066,6 +2247,35 @@ const LANG = {
 
 let currentLang = 'en';
 
+// Return translated fields for a post, falling back to NL base values
+function postTr(post, lang) {
+  const tr = post.tr && post.tr[lang];
+  return {
+    label: (tr && tr.label) || post.label,
+    title: (tr && tr.title) || post.title,
+    body:  (tr && tr.body)  || post.body,
+  };
+}
+
+// Format date from year/month/day per language
+function formatDate(post, lang) {
+  if (!post.day) return post.date; // fallback if no day
+  const d = new Date(post.year, post.month - 1, post.day);
+  if (lang === 'zh') {
+    return `${post.year}年${post.month}月${post.day}日`;
+  }
+  if (lang === 'es') {
+    const months = ['enero','febrero','marzo','abril','mayo','junio',
+                    'julio','agosto','septiembre','octubre','noviembre','diciembre'];
+    return `${post.day} de ${months[post.month - 1]} de ${post.year}`;
+  }
+  if (lang === 'en') {
+    return d.toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' });
+  }
+  // nl — original string
+  return post.date;
+}
+
 function setLanguage(lang) {
   currentLang = lang;
   const t = LANG[lang] || LANG.en;
@@ -2083,6 +2293,41 @@ function setLanguage(lang) {
   // Self card
   document.querySelector('.self-tag').textContent = t.selfTag;
   document.querySelector('.self-text').textContent = t.selfText;
+
+  // Blog cards — update label pill, title, date
+  document.querySelectorAll('#canvas-inner .card[data-id]').forEach(card => {
+    const post = POSTS.find(p => String(p.id) === card.dataset.id);
+    if (!post) return;
+    const tr = postTr(post, lang);
+    const pill = card.querySelector('.tag-pill');
+    if (pill) pill.textContent = tr.label;
+    const title = card.querySelector('.card-title');
+    if (title) title.textContent = tr.title;
+    const date = card.querySelector('.card-date');
+    if (date) date.textContent = formatDate(post, lang);
+  });
+
+  // Expander — update if open
+  const exp = document.getElementById('expander');
+  if (exp && exp.classList.contains('on')) {
+    const expPostId = exp.dataset.postId;
+    if (expPostId !== undefined) {
+      const post = POSTS.find(p => String(p.id) === expPostId);
+      if (post) {
+        const tr = postTr(post, lang);
+        const catEl = document.getElementById('exp-cat');
+        if (catEl) catEl.innerHTML = `<span class="exp-dot" style="background:${post.color}"></span><span style="color:${post.color}">${tr.label}</span>`;
+        const titleEl = document.getElementById('exp-title');
+        if (titleEl) titleEl.textContent = tr.title;
+        const metaEl = document.getElementById('exp-meta');
+        if (metaEl) metaEl.innerHTML = `<span>${formatDate(post, lang)}</span><span>·</span><span>${post.read}</span>`;
+        const labelEl = document.getElementById('exp-label');
+        if (labelEl) labelEl.textContent = tr.label + ' — ' + formatDate(post, lang);
+        const textEl = document.getElementById('exp-text');
+        if (textEl) textEl.innerHTML = tr.body;
+      }
+    }
+  }
 
   // Expander share (update live if open)
   const shareBtn = document.getElementById('share-copy');
