@@ -956,6 +956,263 @@ body.light #about-bg { background: rgba(0,0,0,0.45); }
 /* animation fill-mode can win over .faded — override with !important */
 .card.faded { opacity: 0 !important; pointer-events: none !important; }
 
+/* ════════════════════════════════════════════════════════════
+   RESPONSIVE — MOBILE ONLY
+   Alle regels hieronder gelden uitsluitend op ≤768px.
+   Desktop-layout (≥769px) is volledig ongewijzigd.
+   ════════════════════════════════════════════════════════════ */
+
+@media (max-width: 768px) {
+
+  /* ── 1. NAVIGATIE ────────────────────────────────────────── */
+  nav {
+    height: auto;
+    flex-direction: column;
+    align-items: stretch;
+    padding: 0;
+    gap: 0;
+  }
+  .nav-name {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 16px;
+    height: 48px;
+    flex-shrink: 0;
+  }
+  /* Rechter nav-elementen in eigen rij, horizontaal scrollbaar */
+  .nav-right {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    gap: 4px;
+    padding: 0 12px 0 12px;
+    height: 44px;
+    border-top: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+  .nav-right::-webkit-scrollbar { display: none; }
+  /* Filter-knoppen — grotere touch targets */
+  .nf {
+    min-height: 36px;
+    padding: 6px 14px;
+    font-size: 11px;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .nav-sep { display: none; }
+  .nav-about {
+    min-height: 36px;
+    padding: 6px 14px;
+    font-size: 11px;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .lang-wrap { flex-shrink: 0; }
+  .lang-btn {
+    min-height: 36px;
+    padding: 6px 10px;
+    font-size: 11px;
+  }
+  .lang-menu {
+    top: 40px;
+    min-width: 160px;
+  }
+  .lang-opt {
+    font-size: 12px;
+    padding: 10px 16px;
+  }
+
+  /* ── 2. CANVAS — vertikale stapel op mobiel ─────────────── */
+  #canvas {
+    top: 92px;   /* nav is nu 2 rijen: 48 + 44 */
+    bottom: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  #canvas-inner {
+    width: 100% !important;
+    height: auto !important;
+    min-height: 100%;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 12px;
+    padding: 16px 12px 40px;
+  }
+  /* Kaarten: uit absolute positioning, volle breedte */
+  #canvas-inner .card {
+    position: relative !important;
+    left: auto !important;
+    top: auto !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    flex-shrink: 0;
+  }
+  /* Tijdlijn verbergen op mobiel */
+  #timeline { display: none !important; }
+  /* Thumb-afbeelding schaalt mee */
+  #canvas-inner .card .thumb {
+    height: 180px !important;
+  }
+  #canvas-inner .card .thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  /* Resize-handle verbergen (touch drag/resize onhandig) */
+  #canvas-inner .resize-handle { display: none; }
+
+  /* ── 3. VASTE LINKERZIJBALK — verbergen op mobiel ────────── */
+  #light-switch { display: none; }
+  #self-card    { display: none; }
+  #mode-toggle  { display: none; }
+
+  /* ── 4. TICKER — verbergen (neemt waardevolle ruimte) ────── */
+  .ticker-bar { display: none; }
+
+  /* ── 5. EXPANDER — volledig scherm op mobiel ────────────── */
+  #expander {
+    /* Overschrijf de JS-gestylde dimensies met vaste full-screen positie */
+    inset: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    border-radius: 0 !important;
+    left: 0 !important;
+    top: 0 !important;
+    border-left: none !important;
+    border: none !important;
+    overflow-y: auto !important;
+    display: flex;
+    flex-direction: column;
+  }
+  #expander.on {
+    opacity: 1;
+    pointer-events: all;
+  }
+  #exp-bar {
+    padding: 12px 16px;
+    min-height: 48px;
+  }
+  #exp-x {
+    min-width: 44px;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  #exp-img { height: auto; }
+  #exp-img img { width: 100%; height: auto; max-height: 260px; object-fit: cover; }
+  #exp-body { padding: 20px 16px 40px; }
+  #exp-title { font-size: clamp(18px, 5vw, 28px); }
+  .share-btns { flex-wrap: wrap; gap: 8px; }
+  .share-btn  { min-height: 40px; padding: 8px 14px; font-size: 12px; }
+  #backdrop { display: none; } /* backdrop overbodig bij full-screen expander */
+
+  /* ── 6. PORTFOLIO PANEL ──────────────────────────────────── */
+  /* Panel is al full-screen (inset:0) — prima */
+
+  /* Portfolio cards: zelfde aanpak als blog */
+  #pf-inner .card {
+    position: relative !important;
+    left: auto !important;
+    top: auto !important;
+    width: 100% !important;
+    min-width: 0 !important;
+  }
+  #pf-inner .card .thumb { height: 160px !important; }
+  #pf-inner .resize-handle { display: none; }
+
+  /* Verticale tijdlijn verbergen op mobiel */
+  .pf-vtl-line,
+  .pf-vtl-year,
+  .pf-vtl-qtr,
+  .pf-vtl-tick,
+  .pf-vtl-dot { display: none !important; }
+
+  /* Typewriter-tekst: in de flex-flow plaatsen (was position:absolute) */
+  #pf-typewriter {
+    position: relative !important;
+    top: auto !important;
+    left: auto !important;
+    right: auto !important;
+    width: 100% !important;
+    font-size: 14px !important;
+    text-align: left !important;
+    padding: 8px 0 4px;
+  }
+
+  /* Cards starten direct bovenaan, niet na typewriter-ruimte */
+  #pf-inner {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 16px 12px 40px;
+    height: auto !important;
+  }
+
+  /* Portfolio card expander: volledig scherm op mobiel */
+  #pf-exp {
+    position: fixed !important;
+    inset: 0 !important;
+    width: 100% !important;
+    border-left: none !important;
+    transform: translateY(100%);
+    transition: transform 0.32s cubic-bezier(0.4,0,0.2,1) !important;
+  }
+  #pf-exp.on {
+    transform: translateY(0) !important;
+  }
+  #pf-exp-x {
+    min-width: 44px;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  #pf-exp-img img { height: auto; max-height: 240px; }
+
+  /* ── 7. ABOUT PANEL ─────────────────────────────────────── */
+  #about-box {
+    padding: 24px 20px;
+    width: 100% !important;
+    max-width: 100% !important;
+    max-height: 90vh;
+    border-radius: 12px;
+    margin: 0 12px;
+  }
+  #about-box h2 { font-size: clamp(20px, 6vw, 32px); }
+  .about-close {
+    min-height: 44px;
+    padding: 10px 20px;
+    font-size: 13px;
+  }
+  .acr-val { font-size: 13px; }
+
+}
+
+/* ── Extra fine-tuning voor kleine telefoons (≤480px) ───────── */
+@media (max-width: 480px) {
+
+  .nf, .nav-about {
+    padding: 6px 10px;
+    font-size: 10px;
+  }
+  .lang-btn { padding: 4px 8px; }
+
+  #exp-body { padding: 16px 14px 32px; }
+  #about-box { padding: 20px 16px; }
+
+  /* Share-knoppen onder elkaar op kleinste schermen */
+  .share-btns { flex-direction: column; }
+  .share-btn  { width: 100%; justify-content: center; }
+
+}
+
 </style>
 </head>
 <body>
@@ -1902,6 +2159,7 @@ let _pfTypewriter = null;
   // ── Typewriter text (centred above first card) ──
   const TYPER_TEXT = 'Allemaal pogingen om de maatschappij een stukje mooier te maken. Soms met succes en soms niet ;).';
   const typerEl = document.createElement('div');
+  typerEl.id = 'pf-typewriter';
   typerEl.style.cssText = `
     position:absolute; top:24px;
     left:${CARD_X}px; right:40px;
