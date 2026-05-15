@@ -1,0 +1,1572 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Robin Smallenbroek</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+
+/* ── VARIABLES ────────────────────────────────────────────── */
+:root {
+  --bg:       #060606;
+  --card:     #0e0e0e;
+  --border:   #1e1e1e;
+  --text:     #f0f0f0;
+  --muted:    #444;
+  --dim:      #666;
+  --dot:      rgba(255,255,255,0.045);
+  --tl:       rgba(255,255,255,0.12);
+  --tl-text:  rgba(255,255,255,0.50);
+  --tl-line:  rgba(255,255,255,0.20);
+  --self:     #d4648a;
+
+  --org:    #5b8dee;
+  --impact: #3ecf6e;
+  --art:    #f0a500;
+  --sport:  #f06060;
+
+  --org-bg:    #04091a;
+  --impact-bg: #031009;
+  --art-bg:    #100900;
+  --sport-bg:  #100404;
+
+  --sans: 'Space Grotesk', sans-serif;
+  --mono: 'Space Mono', monospace;
+  --ease: cubic-bezier(0.25, 0, 0, 1);
+}
+
+body.light {
+  --bg:      #e6e3dd;
+  --card:    #dedad2;
+  --border:  #c8c3bb;
+  --text:    #1a1918;
+  --muted:   #918c85;
+  --dim:     #6e6a63;
+  --dot:     rgba(0,0,0,0.055);
+  --tl:      rgba(0,0,0,0.08);
+  --tl-text: rgba(0,0,0,0.45);
+  --tl-line: rgba(0,0,0,0.18);
+  --self:    #c0456e;
+
+  --org-bg:    #dfe8f8;
+  --impact-bg: #ddf5e7;
+  --art-bg:    #f8f0dc;
+  --sport-bg:  #f8dfdf;
+}
+
+/* ── RESET ────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  height: 100%;
+  overflow: hidden;
+  font-family: var(--sans);
+  background: var(--bg);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+  transition: background 0.5s, color 0.4s;
+  user-select: none;
+}
+
+/* dot grid */
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background-image: radial-gradient(circle, var(--dot) 1px, transparent 1px);
+  background-size: 32px 32px;
+  pointer-events: none;
+  z-index: 0;
+  transition: background-image 0.5s;
+}
+
+/* ── NAV ──────────────────────────────────────────────────── */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: 48px;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  background: rgba(6,6,6,0.88);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+  transition: background 0.5s, border-color 0.4s;
+}
+body.light nav { background: rgba(230,227,221,0.88); }
+
+.nav-name {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text);
+  transition: color 0.4s;
+}
+
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.nf {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--dim);
+  padding: 5px 12px;
+  cursor: pointer;
+  border: 1px solid transparent;
+  background: none;
+  border-radius: 2px;
+  transition: all 0.15s;
+}
+.nf:hover { color: var(--text); }
+.nf.active { color: var(--text); border-color: var(--border); }
+.nf[data-cat="org"].active    { color: var(--org);    border-color: var(--org); }
+.nf[data-cat="impact"].active { color: var(--impact); border-color: var(--impact); }
+.nf[data-cat="art"].active    { color: var(--art);    border-color: var(--art); }
+.nf[data-cat="sport"].active  { color: var(--sport);  border-color: var(--sport); }
+
+.nav-sep { width: 1px; height: 16px; background: var(--border); margin: 0 8px; transition: background 0.4s; }
+.nav-about {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--dim);
+  padding: 5px 12px;
+  cursor: pointer;
+  background: none;
+  border: none;
+  transition: color 0.15s;
+}
+.nav-about:hover { color: var(--text); }
+
+/* ── WALL SWITCH (cartoon SVG style) ─────────────────────── */
+#light-switch {
+  position: fixed;
+  top: 62px; left: 18px;
+  z-index: 90;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  user-select: none;
+}
+
+.sw-svg {
+  width: 30px; height: 50px;
+  overflow: visible;
+  color: var(--text);
+  transition: color 0.4s;
+}
+
+/* Depth faces — suggest 3D wall-mounted look */
+.sw-depth-r {
+  fill: var(--border);
+  stroke: currentColor; stroke-width: 1.1;
+  stroke-linejoin: round;
+  transition: fill 0.4s;
+}
+.sw-depth-t {
+  fill: var(--muted);
+  stroke: currentColor; stroke-width: 1.1;
+  stroke-linejoin: round;
+  opacity: 0.5;
+  transition: fill 0.4s;
+}
+/* Front plate */
+.sw-face {
+  fill: var(--card);
+  stroke: currentColor; stroke-width: 1.4;
+  transition: fill 0.4s;
+}
+
+/* Rocker group — animated on toggle */
+.sw-rocker-group { transition: opacity 0s; }
+@keyframes sw-flip {
+  0%   { opacity: 1; }
+  30%  { opacity: 0; }
+  70%  { opacity: 0; }
+  100% { opacity: 1; }
+}
+.sw-svg.sw-flipping .sw-rocker-group {
+  animation: sw-flip 0.32s ease;
+}
+
+/* Rocker shapes — trapezoid perspective to show which side is pressed */
+.sw-rock {
+  fill: var(--bg);
+  stroke: currentColor; stroke-width: 1.1;
+  stroke-linejoin: round;
+  transition: fill 0.4s;
+}
+/* OFF: bottom side closer to viewer → bottom edge wider */
+.sw-rock-off { opacity: 1; }
+.sw-rock-on  { opacity: 0; }
+body.light .sw-rock-off { opacity: 0; }
+body.light .sw-rock-on  { opacity: 1; }
+
+/* Indicator bar on rocker */
+.sw-ind { stroke: currentColor; stroke-linecap: round; }
+.sw-ind-off { opacity: 0.85; transition: opacity 0.15s; }
+.sw-ind-on  { opacity: 0.14; transition: opacity 0.15s; }
+body.light .sw-ind-off { opacity: 0.14; }
+body.light .sw-ind-on  { opacity: 0.85; }
+
+/* Label */
+.switch-label {
+  font-family: var(--mono);
+  font-size: 8px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--dim);
+  transition: color 0.4s;
+  white-space: nowrap;
+}
+
+/* ── SELF CARD ────────────────────────────────────────────── */
+#self-card {
+  position: fixed;
+  bottom: 86px; left: 18px;
+  width: 230px;
+  z-index: 80;
+  background: var(--card);
+  border-top: 1.5px solid var(--self);
+  transition: background 0.4s, border-color 0.4s;
+  overflow: hidden;
+}
+/* Collapsed: only header visible */
+#self-card.collapsed { cursor: pointer; }
+#self-card.collapsed:hover { opacity: 0.8; }
+
+.self-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 11px 15px 11px 20px;
+}
+.self-tag {
+  font-family: var(--mono);
+  font-size: 8px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--self);
+  transition: color 0.4s;
+}
+.self-toggle {
+  background: none; border: none;
+  color: var(--dim); cursor: pointer;
+  font-size: 13px; line-height: 1;
+  padding: 2px 4px;
+  transition: color 0.15s, transform 0.3s;
+}
+.self-toggle:hover { color: var(--text); }
+#self-card.collapsed .self-toggle { transform: rotate(180deg); }
+
+.self-body {
+  padding: 0 20px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  cursor: pointer;
+  max-height: 300px;
+  transition: max-height 0.38s cubic-bezier(0.25,0,0,1), padding 0.38s;
+}
+#self-card.collapsed .self-body {
+  max-height: 0;
+  padding-bottom: 0;
+  overflow: hidden;
+}
+.self-name {
+  font-size: 17px;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  transition: color 0.4s;
+}
+.self-text {
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--dim);
+  transition: color 0.4s;
+}
+.self-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+  transition: border-color 0.4s;
+}
+.self-url {
+  font-family: var(--mono);
+  font-size: 8px;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  transition: color 0.4s;
+}
+.self-arrow { font-size: 11px; color: var(--self); transition: color 0.4s; }
+
+/* ── CANVAS ───────────────────────────────────────────────── */
+#canvas {
+  position: fixed;
+  top: 48px; left: 0; right: 0; bottom: 30px;
+  overflow-x: scroll;
+  overflow-y: hidden;
+  z-index: 1;
+}
+#canvas::-webkit-scrollbar { height: 2px; }
+#canvas::-webkit-scrollbar-track { background: transparent; }
+#canvas::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+#canvas-inner {
+  position: relative;
+  width: 3500px;
+  height: 100%;
+}
+
+/* ── CARD ─────────────────────────────────────────────────── */
+.card {
+  position: absolute;
+  background: var(--card);
+  border-top: 1.5px solid var(--border);
+  cursor: grab;
+  transition:
+    box-shadow 0.3s var(--ease),
+    transform 0.3s var(--ease),
+    opacity 0.3s,
+    background 0.4s,
+    border-color 0.4s;
+  will-change: transform;
+}
+.card:hover { box-shadow: 0 14px 44px rgba(0,0,0,0.65); }
+body.light .card:hover { box-shadow: 0 10px 32px rgba(0,0,0,0.15); }
+.card.dragging { cursor: grabbing; box-shadow: 0 24px 72px rgba(0,0,0,0.85); z-index: 50 !important; }
+body.light .card.dragging { box-shadow: 0 16px 48px rgba(0,0,0,0.2); }
+/* see bottom of style block — .card.faded is defined there with !important */
+.card.animating { transition: left 0.55s var(--ease), top 0.55s var(--ease), box-shadow 0.3s, transform 0.3s, opacity 0.3s, background 0.4s; }
+
+/* category color on hover */
+.card[data-cat="org"]:hover    { border-top-color: var(--org); }
+.card[data-cat="impact"]:hover { border-top-color: var(--impact); }
+.card[data-cat="art"]:hover    { border-top-color: var(--art); }
+.card[data-cat="sport"]:hover  { border-top-color: var(--sport); }
+
+/* ── PHOTO CARD ───────────────────────────────────────────── */
+.card-photo .thumb { overflow: hidden; display: block; }
+.card-photo .thumb img {
+  width: 100%; height: 100%; object-fit: cover; display: block;
+  transition: transform 0.55s var(--ease), filter 0.4s;
+  filter: brightness(0.85);
+  pointer-events: none;
+}
+body.light .card-photo .thumb img { filter: brightness(0.92); }
+.card-photo:hover .thumb img { transform: scale(1.05); filter: brightness(0.7); }
+body.light .card-photo:hover .thumb img { filter: brightness(0.82); }
+
+/* ── TEXT CARD ────────────────────────────────────────────── */
+.card-text { overflow: hidden; }
+.card-text .bg-index {
+  position: absolute; bottom: -12px; right: -4px;
+  font-family: var(--mono); font-size: 110px; font-weight: 700; line-height: 1;
+  color: rgba(255,255,255,0.025); pointer-events: none; user-select: none;
+}
+body.light .card-text .bg-index { color: rgba(0,0,0,0.04); }
+
+/* ── CARD BODY ────────────────────────────────────────────── */
+.card-body { padding: 16px 18px 18px; display: flex; flex-direction: column; gap: 10px; }
+.card-tag { display: flex; align-items: center; justify-content: space-between; }
+.tag-pill {
+  font-family: var(--mono); font-size: 9px; letter-spacing: 0.16em;
+  text-transform: uppercase; padding: 3px 8px; border-radius: 1px;
+}
+.tag-idx { font-family: var(--mono); font-size: 9px; color: var(--muted); letter-spacing: 0.05em; }
+.card-title { font-size: 16px; font-weight: 700; line-height: 1.28; letter-spacing: -0.01em; transition: color 0.4s; }
+.card-text .card-title { font-size: clamp(18px, 2vw, 24px); }
+.card-footer {
+  display: flex; align-items: center; justify-content: space-between;
+  padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.05); margin-top: 2px;
+  transition: border-color 0.4s;
+}
+body.light .card-footer { border-top-color: rgba(0,0,0,0.06); }
+.card-date { font-family: var(--mono); font-size: 9px; letter-spacing: 0.08em; color: var(--muted); }
+.card-read { font-family: var(--mono); font-size: 9px; letter-spacing: 0.08em; color: var(--muted); }
+
+/* ── RESIZE HANDLE ────────────────────────────────────────── */
+.resize-handle {
+  position: absolute; bottom: 0; right: 0;
+  width: 32px; height: 32px;
+  cursor: nwse-resize; z-index: 10;
+  display: flex; align-items: flex-end; justify-content: flex-end;
+  padding: 7px;
+  opacity: 0; transition: opacity 0.2s;
+}
+.card:hover .resize-handle { opacity: 1; }
+.resize-handle svg { width: 10px; height: 10px; opacity: 0.5; pointer-events: none; }
+
+/* ── TIMELINE ─────────────────────────────────────────────── */
+#timeline {
+  position: absolute;
+  bottom: 0; left: 0;
+  width: 3500px; height: 58px;
+  border-top: 1px solid var(--tl-line);
+  transition: opacity 0.4s, border-color 0.4s;
+  pointer-events: none;
+}
+#timeline.hidden { opacity: 0; }
+
+.tl-quarter-label {
+  position: absolute;
+  bottom: 32px;
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--tl-text);
+  white-space: nowrap;
+  transition: color 0.4s;
+}
+
+.tl-year-label {
+  position: absolute;
+  bottom: 32px;
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--tl-text);
+  white-space: nowrap;
+  transition: color 0.4s;
+  opacity: 0.7;
+}
+
+.tl-divider {
+  position: absolute;
+  top: 0; bottom: 0;
+  width: 1px;
+  background: var(--tl-line);
+  transition: background 0.4s;
+}
+
+.tl-post-dot {
+  position: absolute;
+  bottom: 16px;
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  transform: translateX(-50%);
+  opacity: 0.85;
+  transition: background 0.4s, opacity 0.3s;
+}
+.tl-post-dot.faded { opacity: 0; }
+
+/* ── SELF CARD ────────────────────────────────────────────── */
+#self-card {
+  position: fixed;
+  bottom: 86px; left: 18px;
+  width: 230px;
+  z-index: 80;
+  background: var(--card);
+  border-top: 1.5px solid var(--self);
+  transition: background 0.4s, border-color 0.4s;
+  cursor: default;
+}
+.self-inner {
+  padding: 18px 20px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.self-tag {
+  font-family: var(--mono);
+  font-size: 8px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--self);
+  transition: color 0.4s;
+}
+.self-name {
+  font-size: 17px;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  transition: color 0.4s;
+}
+.self-text {
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--dim);
+  transition: color 0.4s;
+}
+.self-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+  transition: border-color 0.4s;
+}
+.self-url {
+  font-family: var(--mono);
+  font-size: 8px;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  transition: color 0.4s;
+}
+.self-arrow {
+  font-size: 10px;
+  color: var(--self);
+  transition: color 0.4s;
+}
+
+/* ── VIDEO CARD ───────────────────────────────────────────── */
+.card-video .thumb { overflow: hidden; display: block; position: relative; }
+.card-video .thumb img {
+  width: 100%; height: 100%; object-fit: cover; display: block;
+  transition: transform 0.55s var(--ease), filter 0.4s;
+  filter: brightness(0.75);
+  pointer-events: none;
+}
+.card-video:hover .thumb img { transform: scale(1.04); filter: brightness(0.55); }
+.play-btn {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.92);
+  display: flex; align-items: center; justify-content: center;
+  transition: transform 0.25s, background 0.25s;
+  pointer-events: none;
+}
+.play-btn svg { width: 16px; height: 16px; margin-left: 3px; }
+.card-video:hover .play-btn { transform: translate(-50%, -50%) scale(1.1); background: #fff; }
+
+/* ── SHARE ────────────────────────────────────────────────── */
+#exp-share {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-top: 20px;
+  margin-top: 6px;
+  border-top: 1px solid var(--border);
+  transition: border-color 0.4s;
+}
+.share-lbl {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.share-btns {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.share-btn {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--dim);
+  background: none;
+  border: 1px solid var(--border);
+  padding: 7px 13px;
+  border-radius: 1px;
+  cursor: pointer;
+  transition: all 0.15s;
+  display: flex; align-items: center; gap: 6px;
+}
+.share-btn:hover { color: var(--text); border-color: var(--text); }
+.share-btn.copied { color: var(--impact); border-color: var(--impact); }
+
+/* exp video iframe */
+#exp-video {
+  width: 100%;
+  aspect-ratio: 16/9;
+  border: none;
+  display: none;
+  flex-shrink: 0;
+  background: #000;
+}
+
+/* ── MODE TOGGLE ──────────────────────────────────────────── */
+#mode-toggle {
+  position: fixed;
+  bottom: 38px; left: 18px;
+  z-index: 90;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+}
+
+.toggle-track {
+  width: 32px; height: 18px;
+  background: var(--muted);
+  border-radius: 9px;
+  position: relative;
+  flex-shrink: 0;
+  transition: background 0.25s;
+  cursor: pointer;
+}
+.toggle-track.on { background: var(--text); }
+.toggle-thumb {
+  position: absolute;
+  top: 3px; left: 3px;
+  width: 12px; height: 12px;
+  border-radius: 50%;
+  background: var(--bg);
+  transition: transform 0.25s var(--ease), background 0.4s;
+}
+.toggle-track.on .toggle-thumb { transform: translateX(14px); }
+
+.mode-label {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--dim);
+  transition: color 0.4s;
+  white-space: nowrap;
+}
+
+/* ── TICKER ───────────────────────────────────────────────── */
+.ticker-bar {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  height: 30px; z-index: 100;
+  display: flex; align-items: center;
+  overflow: hidden;
+  border-top: 1px solid var(--border);
+  background: rgba(6,6,6,0.88);
+  backdrop-filter: blur(12px);
+  transition: background 0.5s, border-color 0.4s;
+}
+body.light .ticker-bar { background: rgba(230,227,221,0.88); }
+
+.ticker-inner {
+  display: flex; white-space: nowrap;
+  animation: ticker-scroll 36s linear infinite;
+}
+.ticker-item {
+  font-family: var(--mono); font-size: 9px;
+  letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--muted);
+  padding: 0 44px; flex-shrink: 0;
+  display: flex; align-items: center; gap: 10px;
+  transition: color 0.4s;
+}
+.ticker-dot { width: 4px; height: 4px; border-radius: 50%; flex-shrink: 0; }
+@keyframes ticker-scroll {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+/* ── EXPANDER ─────────────────────────────────────────────── */
+#backdrop {
+  position: fixed; inset: 0;
+  z-index: 200;
+  background: transparent;
+  backdrop-filter: blur(0px);
+  pointer-events: none;
+  transition: background 0.4s, backdrop-filter 0.4s;
+}
+#backdrop.on { background: rgba(0,0,0,0.72); backdrop-filter: blur(8px); pointer-events: all; }
+body.light #backdrop.on { background: rgba(0,0,0,0.45); }
+
+#expander {
+  position: fixed; z-index: 201;
+  background: var(--card);
+  overflow: hidden; opacity: 0; pointer-events: none;
+  display: flex; flex-direction: column;
+  border-top: 1.5px solid var(--border);
+  transition: background 0.4s, border-color 0.4s;
+}
+#expander.on { opacity: 1; pointer-events: all; overflow-y: auto; }
+
+#exp-bar {
+  position: sticky; top: 0;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 22px;
+  background: rgba(14,14,14,0.95);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0; z-index: 1;
+  transition: background 0.4s, border-color 0.4s;
+}
+body.light #exp-bar { background: rgba(222,218,210,0.95); }
+
+#exp-label { font-family: var(--mono); font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--dim); }
+#exp-x {
+  font-family: var(--mono); background: none; border: 1px solid var(--border);
+  color: var(--dim); width: 26px; height: 26px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; font-size: 14px; border-radius: 1px; transition: all 0.15s;
+}
+#exp-x:hover { border-color: var(--text); color: var(--text); }
+
+#exp-img { width: 100%; height: 240px; overflow: hidden; flex-shrink: 0; }
+#exp-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+#exp-body { padding: 28px 24px 40px; display: flex; flex-direction: column; gap: 16px; }
+#exp-cat { display: flex; align-items: center; gap: 8px; font-family: var(--mono); font-size: 9px; letter-spacing: 0.16em; text-transform: uppercase; }
+.exp-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+#exp-title { font-size: clamp(20px, 3vw, 32px); font-weight: 700; line-height: 1.15; letter-spacing: -0.02em; }
+#exp-meta { font-family: var(--mono); font-size: 9px; color: var(--dim); letter-spacing: 0.08em; display: flex; gap: 12px; padding-bottom: 16px; border-bottom: 1px solid var(--border); transition: border-color 0.4s; }
+#exp-text { font-size: 14px; color: var(--dim); line-height: 1.9; user-select: text; }
+#exp-text p + p { margin-top: 12px; }
+#exp-cta { font-family: var(--mono); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text); border: 1px solid var(--border); padding: 11px 18px; border-radius: 1px; width: fit-content; margin-top: 6px; cursor: pointer; background: none; transition: all 0.2s; }
+#exp-cta:hover { background: var(--text); color: var(--bg); }
+
+/* ── ABOUT PANEL ──────────────────────────────────────────── */
+#about-panel {
+  position: fixed; inset: 0; z-index: 300;
+  display: flex; align-items: center; justify-content: center;
+  pointer-events: none; opacity: 0; transition: opacity 0.3s;
+}
+#about-panel.on { pointer-events: all; opacity: 1; }
+#about-bg { position: absolute; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(12px); }
+body.light #about-bg { background: rgba(0,0,0,0.45); }
+#about-box {
+  position: relative; z-index: 1;
+  background: var(--card); border-top: 1.5px solid var(--text);
+  width: min(680px, 94vw); max-height: 85vh; overflow-y: auto;
+  padding: 40px; display: flex; flex-direction: column; gap: 28px;
+  transition: background 0.4s;
+}
+#about-box h2 { font-size: clamp(24px, 3vw, 40px); font-weight: 700; line-height: 1.12; letter-spacing: -0.02em; }
+#about-box p { font-size: 14px; color: var(--dim); line-height: 1.85; user-select: text; }
+.about-num { font-family: var(--mono); font-size: 9px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); margin-bottom: 16px; }
+.about-contacts { display: flex; flex-direction: column; }
+.about-contact-row { display: flex; align-items: center; justify-content: space-between; padding: 16px 0; border-bottom: 1px solid var(--border); cursor: pointer; transition: opacity 0.2s, border-color 0.4s; }
+.about-contact-row:first-child { border-top: 1px solid var(--border); }
+.about-contact-row:hover { opacity: 0.7; }
+.acr-type { font-family: var(--mono); font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); margin-bottom: 3px; }
+.acr-val { font-size: 14px; font-weight: 500; }
+.about-close { font-family: var(--mono); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--dim); background: none; border: 1px solid var(--border); padding: 10px 16px; border-radius: 1px; cursor: pointer; width: fit-content; transition: all 0.15s; }
+.about-close:hover { color: var(--text); border-color: var(--dim); }
+
+/* ── CARD APPEAR ──────────────────────────────────────────── */
+@keyframes cardIn {
+  from { opacity: 0; transform: translateY(14px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+.card { animation: cardIn 0.5s var(--ease) both; }
+/* animation fill-mode can win over .faded — override with !important */
+.card.faded { opacity: 0 !important; pointer-events: none !important; }
+
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <span class="nav-name">Robin Smallenbroek</span>
+  <div class="nav-right">
+    <button class="nf active" onclick="doFilter('all')"    data-cat="all">Alle</button>
+    <button class="nf"        onclick="doFilter('org')"    data-cat="org">Org</button>
+    <button class="nf"        onclick="doFilter('impact')" data-cat="impact">Impact</button>
+    <button class="nf"        onclick="doFilter('art')"    data-cat="art">Art</button>
+    <button class="nf"        onclick="doFilter('sport')"  data-cat="sport">Sport</button>
+    <div class="nav-sep"></div>
+    <button class="nav-about" onclick="openAbout()">Over</button>
+  </div>
+</nav>
+
+<!-- WALL SWITCH -->
+<div id="light-switch" onclick="toggleTheme()" title="Licht aan/uit">
+  <svg class="sw-svg" viewBox="0 0 28 48" fill="none">
+    <!-- 3D depth — right side face -->
+    <path class="sw-depth-r" d="M21 5.5 L26 3.5 L26 44.5 L21 46.5 Z"/>
+    <!-- 3D depth — top face -->
+    <path class="sw-depth-t" d="M2 5.5 L7 3.5 L26 3.5 L21 5.5 Z"/>
+    <!-- Front plate -->
+    <rect class="sw-face" x="2" y="5.5" width="19" height="41" rx="3"/>
+    <!-- Rocker group (cross-fades on toggle) -->
+    <g class="sw-rocker-group">
+      <!-- OFF shape: bottom toward viewer → bottom edge is wider (trapezoid) -->
+      <path class="sw-rock sw-rock-off" d="M6.5 11 L16.5 11 L15 37 L8 37 Z"/>
+      <!-- ON shape: top toward viewer → top edge wider -->
+      <path class="sw-rock sw-rock-on"  d="M8 11 L15 11 L16.5 37 L6.5 37 Z"/>
+      <!-- OFF indicator: bar near bottom of rocker -->
+      <line class="sw-ind sw-ind-off" x1="9" y1="33.5" x2="14" y2="33.5" stroke-width="1.5"/>
+      <!-- ON indicator: bar near top of rocker -->
+      <line class="sw-ind sw-ind-on"  x1="9" y1="14.5" x2="14" y2="14.5" stroke-width="1.5"/>
+    </g>
+  </svg>
+  <span class="switch-label" id="switchLabel">Dark</span>
+</div>
+
+<!-- CANVAS -->
+<div id="canvas">
+  <div id="canvas-inner">
+    <!-- cards injected by JS -->
+    <!-- timeline injected by JS -->
+  </div>
+</div>
+
+<!-- SELF CARD -->
+<div id="self-card">
+  <div class="self-header">
+    <div class="self-tag">Over de auteur</div>
+    <button class="self-toggle" id="selfToggle" onclick="collapseSelf(event)" title="Inklappen">↑</button>
+  </div>
+  <div class="self-body" onclick="openSelf()">
+    <div class="self-name">Robin Smallenbroek</div>
+    <p class="self-text">Schrijft over wat de wereld beweegt — en wat haar kan bewegen. Organisatorische innovatie, social impact, kunst &amp; sport.</p>
+    <div class="self-footer">
+      <span class="self-url">robinsmallenbroek.nl</span>
+      <span class="self-arrow">→</span>
+    </div>
+  </div>
+</div>
+
+<!-- MODE TOGGLE -->
+<div id="mode-toggle" onclick="toggleMode()">
+  <div class="toggle-track" id="modeTrack">
+    <div class="toggle-thumb"></div>
+  </div>
+  <span class="mode-label" id="modeLabel">Tijdlijn</span>
+</div>
+
+<!-- TICKER -->
+<div class="ticker-bar">
+  <div class="ticker-inner" id="ticker"></div>
+</div>
+
+<!-- EXPANDER -->
+<div id="backdrop"></div>
+<div id="expander">
+  <div id="exp-bar">
+    <span id="exp-label"></span>
+    <button id="exp-x" onclick="closeExp()">×</button>
+  </div>
+  <div id="exp-img"></div>
+  <iframe id="exp-video" allowfullscreen allow="autoplay"></iframe>
+  <div id="exp-body">
+    <div id="exp-cat"></div>
+    <h2 id="exp-title"></h2>
+    <div id="exp-meta"></div>
+    <div id="exp-text"></div>
+    <button id="exp-cta">Volledige post lezen →</button>
+    <div id="exp-share">
+      <div class="share-lbl">Delen</div>
+      <div class="share-btns">
+        <button class="share-btn" id="share-wa"  onclick="sharePost('whatsapp')">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+          WhatsApp
+        </button>
+        <button class="share-btn" id="share-sig" onclick="sharePost('signal')">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm.93 17.258l-.93.742-.93-.742C7.027 16.01 4.8 13.3 4.8 10.2c0-3.977 3.223-7.2 7.2-7.2s7.2 3.223 7.2 7.2c0 3.1-2.227 5.81-6.27 7.058z"/></svg>
+          Signal
+        </button>
+        <button class="share-btn" id="share-copy" onclick="sharePost('copy')">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+          Link kopiëren
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ABOUT -->
+<div id="about-panel">
+  <div id="about-bg" onclick="closeAbout()"></div>
+  <div id="about-box">
+    <div>
+      <div class="about-num">001 — Over</div>
+      <h2>Ik schrijf over wat de wereld beweegt — en wat haar kan bewegen.</h2>
+    </div>
+    <p>Robin Smallenbroek werkt op het snijvlak van organisatieverandering, sociale innovatie, kunst en sport. Dit is de plek waar die werelden samenkomen — niet als vakje, maar als perspectief op hoe dingen anders kunnen.</p>
+    <div>
+      <div class="about-num">002 — Contact</div>
+      <div class="about-contacts">
+        <div class="about-contact-row"><div><div class="acr-type">Email</div><div class="acr-val">robin@robinsmallenbroek.nl</div></div><span style="color:var(--muted)">→</span></div>
+        <div class="about-contact-row"><div><div class="acr-type">LinkedIn</div><div class="acr-val">linkedin.com/in/robinsmallenbroek</div></div><span style="color:var(--muted)">→</span></div>
+        <div class="about-contact-row"><div><div class="acr-type">Substack</div><div class="acr-val">robinsmallenbroek.substack.com</div></div><span style="color:var(--muted)">→</span></div>
+      </div>
+    </div>
+    <button class="about-close" onclick="closeAbout()">Sluiten ×</button>
+  </div>
+</div>
+
+<script>
+// ════════════════════════════════════════════════════════════
+// DATA
+// ════════════════════════════════════════════════════════════
+const POSTS = [
+  {
+    id:0, cat:'org', label:'Org. Innovatie', color:'var(--org)', bg:'var(--org-bg)',
+    type:'photo', width:380, thumbH:220,
+    title:'De organisatie zonder middenmanagement',
+    date:'14 Mei 2026', year:2026, q:2, month:5, day:14, read:'7 min',
+    img:'https://images.unsplash.com/photo-1497366754035-f200968a6e72?w=900&q=80',
+    body:`<p>Steeds meer bedrijven schrappen managementlagen die decennialang als vanzelfsprekend golden. Niet als bezuiniging, maar als architectuurkeuze.</p><p>Van Buurtzorg tot Haier: de patronen zijn opvallend consistent. Autonomie vergroot snelheid. Maar wat verdwijnt er ook?</p>`
+  },
+  {
+    id:1, cat:'art', label:'Art', color:'var(--art)', bg:'var(--art-bg)',
+    type:'text', width:300,
+    title:'Ryoji Ikeda: data als zintuigelijke ervaring',
+    date:'22 Mrt 2026', year:2026, q:1, month:3, day:22, read:'5 min',
+    img:'https://images.unsplash.com/photo-1549490349-8643362247b5?w=900&q=80',
+    body:`<p>Wat gebeurt er als je terabytes aan data omzet in licht en geluid? Ryoji Ikeda doet het, en het resultaat is tegelijk overweldigend en precies.</p><p>Over datavisualisatie, aandacht en de grenzen van menselijke perceptie.</p>`
+  },
+  {
+    id:2, cat:'impact', label:'Social Impact', color:'var(--impact)', bg:'var(--impact-bg)',
+    type:'photo', width:320, thumbH:190,
+    title:'Buurtcoöperaties en energiearmoede in Nederlandse wijken',
+    date:'9 Apr 2026', year:2026, q:2, month:4, day:9, read:'9 min',
+    img:'https://images.unsplash.com/photo-1559027615-cd4628902d4a?w=900&q=80',
+    body:`<p>In Rotterdam-Zuid, Kanaleneiland en de Schilderswijk groeit iets wat tien jaar geleden nog ondenkbaar leek. Gemiddeld 340 euro besparing per huishouden per jaar. Maar het echte verhaal gaat over eigenaarschap.</p>`
+  },
+  {
+    id:3, cat:'sport', label:'Sport', color:'var(--sport)', bg:'var(--sport-bg)',
+    type:'photo', width:300, thumbH:200,
+    title:'Ultra-running als metafoor voor organisatieverandering',
+    date:'1 Mrt 2026', year:2026, q:1, month:3, day:1, read:'6 min',
+    img:'https://images.unsplash.com/photo-1571008887538-b36bb32f4571?w=900&q=80',
+    body:`<p>Kilometer 74. Je lichaam zegt stop. Je hoofd weet dat er nog 26 te gaan zijn. De parallellen met organisatieverandering zijn scherper dan ik had gedacht.</p>`
+  },
+  {
+    id:4, cat:'impact', label:'Social Impact', color:'var(--impact)', bg:'var(--impact-bg)',
+    type:'text', width:280,
+    title:'Impact investing gedemystificeerd',
+    date:'10 Jan 2026', year:2026, q:1, month:1, day:10, read:'11 min',
+    img:'https://images.unsplash.com/photo-1532629345422-7515f3d16bb6?w=900&q=80',
+    body:`<p>Niet elk fonds dat zichzelf "impact" noemt investeert in verandering. Maar er zijn ook fondsen die het serieus nemen. Die trade-offs accepteren. Hoe onderscheid je ze?</p>`
+  },
+  {
+    id:5, cat:'org', label:'Org. Innovatie', color:'var(--org)', bg:'var(--org-bg)',
+    type:'text', width:300,
+    title:'Coöperatieven in de platformeconomie',
+    date:'14 Feb 2026', year:2026, q:1, month:2, day:14, read:'8 min',
+    img:'https://images.unsplash.com/photo-1542744173-8e7e53415bb0?w=900&q=80',
+    body:`<p>Fairbnb is geen app. Het is een argument dat de logica van het platform fundamenteel anders kan worden ingericht. Is dit een utopie? Of gewoon goed ontwerp?</p>`
+  },
+  {
+    id:6, cat:'art', label:'Art', color:'var(--art)', bg:'var(--art-bg)',
+    type:'photo', width:340, thumbH:210,
+    title:'Het nieuwe mecenaat: wat bedrijven van de Medici kunnen leren',
+    date:'28 Jan 2026', year:2026, q:1, month:1, day:28, read:'7 min',
+    img:'https://images.unsplash.com/photo-1518998053901-5348d3961a04?w=900&q=80',
+    body:`<p>Lorenzo de Medici financierde Michelangelo niet om zijn logo op het Sixtijnse Plafond te zetten. Hoe verhoudt dat zich tot het corporate sponsorship van 2026?</p>`
+  },
+  {
+    id:7, cat:'sport', label:'Sport', color:'var(--sport)', bg:'var(--sport-bg)',
+    type:'photo', width:280, thumbH:180,
+    title:'Veldrijden en veerkracht: de cross als sociale lijm',
+    date:'2 Dec 2025', year:2025, q:4, month:12, day:2, read:'5 min',
+    img:'https://images.unsplash.com/photo-1517649763962-0c623066013b?w=900&q=80',
+    body:`<p>Op een koude januarizondag staan er 4.000 mensen langs een modderig parcours in een dorp van 800 inwoners. De cross is een van de weinige plekken waar generaties en klassen naast elkaar staan zonder agenda.</p>`
+  },
+  {
+    id:8, cat:'org', label:'Org. Innovatie', color:'var(--org)', bg:'var(--org-bg)',
+    type:'photo', width:360, thumbH:210,
+    title:'AI als collega: hoe mensgerichte organisaties de transitie navigeren',
+    date:'18 Nov 2025', year:2025, q:4, month:11, day:18, read:'10 min',
+    img:'https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=900&q=80',
+    body:`<p>Er zijn twee soorten organisaties bezig met AI: wie vervangt en wie verbetert. De uitkomsten zijn al zichtbaar — en verrassend voorspelbaar.</p>`
+  },
+  {
+    id:9, cat:'impact', label:'Social Impact', color:'var(--impact)', bg:'var(--impact-bg)',
+    type:'video', width:340, thumbH:200,
+    title:'Gesprek: sociale innovatie in de praktijk',
+    date:'20 Mrt 2026', year:2026, q:1, month:3, day:20, read:'18 min video',
+    img:'https://images.unsplash.com/photo-1528605248644-14dd04022da1?w=900&q=80',
+    videoUrl:'https://www.youtube.com/embed/dQw4w9WgXcQ',
+    body:`<p>Een openhartig gesprek over wat sociale innovatie in de praktijk betekent — de successen, de tegenslagen en de lessen die je alleen in het veld leert.</p>`
+  },
+];
+
+// ════════════════════════════════════════════════════════════
+// LAYOUT CONFIG
+// ════════════════════════════════════════════════════════════
+const CANVAS_W = 3500;
+
+// Timeline quarter definitions (x = left edge of quarter zone)
+const QUARTERS = [
+  { key:'Q42025', label:'Q4', year:2025, q:4, x: 180,  xEnd: 960  },
+  { key:'Q12026', label:'Q1', year:2026, q:1, x: 1060, xEnd: 2280 },
+  { key:'Q22026', label:'Q2', year:2026, q:2, x: 2380, xEnd: 3300 },
+];
+
+// Timeline positions (hand-tuned per post for nice spread)
+const TIMELINE_POS = {
+  8: { x: 200,  yp: 0.10 },  // Nov 2025
+  7: { x: 570,  yp: 0.14 },  // Dec 2025
+  4: { x: 1080, yp: 0.10 },  // Jan 10 2026
+  6: { x: 1320, yp: 0.08 },  // Jan 28 2026
+  5: { x: 1580, yp: 0.13 },  // Feb 14 2026
+  3: { x: 1820, yp: 0.09 },  // Mar 1 2026
+  9: { x: 1940, yp: 0.12 },  // Mar 20 2026 (video)
+  1: { x: 2100, yp: 0.11 },  // Mar 22 2026
+  2: { x: 2420, yp: 0.09 },  // Apr 9 2026
+  0: { x: 2720, yp: 0.08 },  // May 14 2026
+};
+
+// Random positions — generated fresh each time
+function genRandomPos() {
+  // Loose grid: 5 cols × 3 rows, one card per cell with randomness within
+  const cols = 5, rows = 3;
+  const cellW = 0.88 / cols;
+  const cellH = 0.72 / rows;
+  const cells = [];
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) cells.push({ c, r });
+  }
+  // Fisher-Yates shuffle
+  for (let i = cells.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [cells[i], cells[j]] = [cells[j], cells[i]];
+  }
+  return POSTS.map((_, i) => {
+    const cell = cells[i % cells.length];
+    return {
+      xp: 0.04 + cell.c * cellW + cellW * (0.08 + Math.random() * 0.75),
+      yp: 0.04 + cell.r * cellH + cellH * (0.05 + Math.random() * 0.72),
+    };
+  });
+}
+let currentRandomPos = genRandomPos();
+
+// ════════════════════════════════════════════════════════════
+// BUILD CARDS
+// ════════════════════════════════════════════════════════════
+const canvasEl    = document.getElementById('canvas');
+const canvasInner = document.getElementById('canvas-inner');
+const cardEls     = [];
+
+const resizeHandleHTML = `<div class="resize-handle">
+  <svg viewBox="0 0 10 10" fill="none"><path d="M1 9L9 1M5 9L9 5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+</div>`;
+
+POSTS.forEach((post, i) => {
+  const el = document.createElement('div');
+  el.className = `card card-${post.type}`;
+  el.dataset.cat = post.cat;
+  el.dataset.id  = post.id;
+  el.style.width = post.width + 'px';
+  el.style.animationDelay = (i * 0.05) + 's';
+  el.style.zIndex = i + 1;
+
+  if (post.type === 'photo' || post.type === 'video') {
+    el.className = `card card-${post.type}`;
+    const playOverlay = post.type === 'video'
+      ? `<div class="play-btn"><svg viewBox="0 0 16 16" fill="var(--bg)"><polygon points="4,2 14,8 4,14"/></svg></div>`
+      : '';
+    el.innerHTML = `
+      <div class="thumb" style="height:${post.thumbH}px">
+        <img src="${post.img}" alt="" draggable="false">
+        ${playOverlay}
+      </div>
+      <div class="card-body">
+        <div class="card-tag">
+          <span class="tag-pill" style="background:color-mix(in srgb,${post.color} 13%,transparent);color:${post.color}">${post.label}</span>
+          <span class="tag-idx">${String(i+1).padStart(2,'0')}</span>
+        </div>
+        <div class="card-title">${post.title}</div>
+        <div class="card-footer">
+          <span class="card-date">${post.date}</span>
+          <span class="card-read">${post.read}</span>
+        </div>
+      </div>${resizeHandleHTML}`;
+  } else {
+    el.style.background = `var(--${post.cat}-bg)`;
+    el.innerHTML = `
+      <div class="bg-index">${String(i+1).padStart(2,'0')}</div>
+      <div class="card-body" style="padding:22px 20px;min-height:210px;justify-content:space-between;display:flex;flex-direction:column">
+        <div>
+          <div class="card-tag" style="margin-bottom:16px">
+            <span class="tag-pill" style="background:color-mix(in srgb,${post.color} 13%,transparent);color:${post.color}">${post.label}</span>
+            <span class="tag-idx">${String(i+1).padStart(2,'0')}</span>
+          </div>
+          <div class="card-title" style="font-size:clamp(17px,2vw,22px)">${post.title}</div>
+        </div>
+        <div class="card-footer">
+          <span class="card-date">${post.date}</span>
+          <span class="card-read">${post.read}</span>
+        </div>
+      </div>${resizeHandleHTML}`;
+  }
+
+  canvasInner.appendChild(el);
+  cardEls.push(el);
+});
+
+// ════════════════════════════════════════════════════════════
+// BUILD TIMELINE
+// ════════════════════════════════════════════════════════════
+const tlEl = document.createElement('div');
+tlEl.id = 'timeline';
+
+// Year labels
+[{year:2025, x:180}, {year:2026, x:1060}].forEach(({year, x}) => {
+  const d = document.createElement('div');
+  d.className = 'tl-year-label';
+  d.style.left = x + 'px';
+  d.textContent = year;
+  tlEl.appendChild(d);
+});
+
+// Quarter labels + dividers
+QUARTERS.forEach((q, qi) => {
+  // Quarter label
+  const lbl = document.createElement('div');
+  lbl.className = 'tl-quarter-label';
+  lbl.style.left = (q.x + 60) + 'px';
+  lbl.textContent = q.label;
+  tlEl.appendChild(lbl);
+
+  // Divider line (not before first)
+  if (qi > 0) {
+    const div = document.createElement('div');
+    div.className = 'tl-divider';
+    div.style.left = q.x + 'px';
+    tlEl.appendChild(div);
+  }
+});
+
+// Post dots on timeline
+POSTS.forEach(post => {
+  const tp = TIMELINE_POS[post.id];
+  if (!tp) return;
+  const dot = document.createElement('div');
+  dot.className = 'tl-post-dot';
+  dot.dataset.id = post.id;
+  const catColors = { org:'var(--org)', impact:'var(--impact)', art:'var(--art)', sport:'var(--sport)' };
+  dot.style.background = catColors[post.cat];
+  dot.style.left = tp.x + (post.width / 2) + 'px';
+  tlEl.appendChild(dot);
+});
+
+canvasInner.appendChild(tlEl);
+
+// ════════════════════════════════════════════════════════════
+// POSITION CARDS
+// ════════════════════════════════════════════════════════════
+let timelineMode = true;
+
+function getCanvasH() { return canvasEl.clientHeight; }
+
+function positionCards(animate) {
+  const cH = getCanvasH();
+  cardEls.forEach((el, i) => {
+    const post = POSTS[i];
+    let x, y;
+    if (timelineMode) {
+      const tp = TIMELINE_POS[post.id];
+      x = tp.x;
+      y = Math.round(tp.yp * cH);
+    } else {
+      const rp = currentRandomPos[i];
+      x = Math.round(rp.xp * CANVAS_W);
+      y = Math.round(rp.yp * cH);
+    }
+    // Clamp y so card stays visible
+    y = Math.min(y, Math.max(0, cH - 100));
+    if (animate) {
+      el.classList.add('animating');
+      setTimeout(() => el.classList.remove('animating'), 600);
+    }
+    el.style.left = x + 'px';
+    el.style.top  = y + 'px';
+  });
+}
+
+positionCards(false);
+window.addEventListener('resize', () => positionCards(false));
+
+// ════════════════════════════════════════════════════════════
+// DRAG & RESIZE — single handler
+// ════════════════════════════════════════════════════════════
+let drag     = null;
+let resizing = null;
+
+function bringToFront(card) {
+  let maxZ = 0;
+  cardEls.forEach(c => { maxZ = Math.max(maxZ, parseInt(c.style.zIndex) || 0); });
+  card.style.zIndex = maxZ + 1;
+}
+
+canvasEl.addEventListener('mousedown', e => {
+  e.preventDefault();
+
+  if (e.target.closest('.resize-handle')) {
+    const card = e.target.closest('.card');
+    if (!card) return;
+    bringToFront(card);
+    resizing = {
+      el: card, startX: e.clientX,
+      startW: card.offsetWidth,
+      post: POSTS[parseInt(card.dataset.id)],
+    };
+    document.body.style.cursor = 'nwse-resize';
+    return;
+  }
+
+  const card = e.target.closest('.card');
+  if (!card) return;
+  bringToFront(card);
+  const rect = card.getBoundingClientRect();
+  drag = {
+    el: card,
+    ox: e.clientX - rect.left,
+    oy: e.clientY - rect.top,
+    sx: e.clientX, sy: e.clientY,
+    moved: false,
+  };
+  card.classList.add('dragging');
+});
+
+window.addEventListener('mousemove', e => {
+  if (resizing) {
+    const newW = Math.max(180, resizing.startW + (e.clientX - resizing.startX));
+    resizing.el.style.width = newW + 'px';
+    const thumb = resizing.el.querySelector('.thumb');
+    if (thumb && resizing.post.thumbH) {
+      thumb.style.height = Math.round(newW * (resizing.post.thumbH / resizing.post.width)) + 'px';
+    }
+    return;
+  }
+  if (!drag) return;
+  if (Math.hypot(e.clientX - drag.sx, e.clientY - drag.sy) > 4) drag.moved = true;
+  if (!drag.moved) return;
+  const cRect = canvasInner.getBoundingClientRect();
+  drag.el.style.left = (e.clientX - cRect.left - drag.ox) + 'px';
+  drag.el.style.top  = (e.clientY - cRect.top  - drag.oy) + 'px';
+});
+
+window.addEventListener('mouseup', e => {
+  if (resizing) {
+    document.body.style.cursor = '';
+    resizing = null;
+    return;
+  }
+  if (drag) {
+    drag.el.classList.remove('dragging');
+    if (!drag.moved) openExp(drag.el);
+    drag = null;
+  }
+});
+
+// touch
+canvasEl.addEventListener('touchstart', e => {
+  if (e.target.closest('.resize-handle')) return;
+  const card = e.target.closest('.card');
+  if (!card) return;
+  const t = e.touches[0];
+  const rect = card.getBoundingClientRect();
+  bringToFront(card);
+  drag = { el:card, ox:t.clientX-rect.left, oy:t.clientY-rect.top, sx:t.clientX, sy:t.clientY, moved:false };
+  card.classList.add('dragging');
+}, { passive: true });
+
+window.addEventListener('touchmove', e => {
+  if (!drag) return;
+  e.preventDefault();
+  const t = e.touches[0];
+  if (Math.hypot(t.clientX-drag.sx, t.clientY-drag.sy) > 4) drag.moved = true;
+  if (!drag.moved) return;
+  const cRect = canvasInner.getBoundingClientRect();
+  drag.el.style.left = (t.clientX - cRect.left - drag.ox) + 'px';
+  drag.el.style.top  = (t.clientY - cRect.top  - drag.oy) + 'px';
+}, { passive: false });
+
+window.addEventListener('touchend', () => {
+  if (!drag) return;
+  drag.el.classList.remove('dragging');
+  if (!drag.moved) openExp(drag.el);
+  drag = null;
+});
+
+// ════════════════════════════════════════════════════════════
+// EXPANDER
+// ════════════════════════════════════════════════════════════
+const expander = document.getElementById('expander');
+const backdrop = document.getElementById('backdrop');
+
+let currentPost = null;
+
+function openExp(cardEl) {
+  const post = POSTS[parseInt(cardEl.dataset.id)];
+  currentPost = post;
+  const rect = cardEl.getBoundingClientRect();
+
+  document.getElementById('exp-label').textContent = post.label + ' — ' + post.date;
+
+  // Show image or video
+  const expImg   = document.getElementById('exp-img');
+  const expVideo = document.getElementById('exp-video');
+  if (post.type === 'video' && post.videoUrl) {
+    expImg.style.display   = 'none';
+    expVideo.style.display = 'block';
+    expVideo.src = post.videoUrl;
+  } else {
+    expImg.innerHTML = post.img ? `<img src="${post.img}" alt="">` : '';
+    expImg.style.display = post.img ? 'block' : 'none';
+    expVideo.style.display = 'none';
+    expVideo.src = '';
+  }
+
+  document.getElementById('exp-cat').innerHTML = `<span class="exp-dot" style="background:${post.color}"></span><span style="color:${post.color}">${post.label}</span>`;
+  document.getElementById('exp-title').textContent = post.title;
+  document.getElementById('exp-meta').innerHTML = `<span>${post.date}</span><span>·</span><span>${post.read}</span>`;
+  document.getElementById('exp-text').innerHTML = post.body;
+
+  // Reset share button
+  const copyBtn = document.getElementById('share-copy');
+  if (copyBtn) { copyBtn.classList.remove('copied'); copyBtn.textContent = ''; copyBtn.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Link kopiëren`; }
+
+  expander.style.borderTopColor = post.color;
+
+  expander.style.transition = 'none';
+  expander.style.opacity = '1';
+  expander.style.top    = rect.top    + 'px';
+  expander.style.left   = rect.left   + 'px';
+  expander.style.width  = rect.width  + 'px';
+  expander.style.height = rect.height + 'px';
+  expander.classList.add('on');
+  expander.scrollTop = 0;
+  expander.getBoundingClientRect();
+
+  const tw = Math.min(780, window.innerWidth * 0.92);
+  const th = window.innerHeight * 0.86;
+  const ea = 'cubic-bezier(0.25,0,0,1)';
+  expander.style.transition = `top .46s ${ea}, left .46s ${ea}, width .46s ${ea}, height .46s ${ea}`;
+  expander.style.top    = ((window.innerHeight - th) / 2) + 'px';
+  expander.style.left   = ((window.innerWidth  - tw) / 2) + 'px';
+  expander.style.width  = tw + 'px';
+  expander.style.height = th + 'px';
+  backdrop.classList.add('on');
+}
+
+function closeExp() {
+  if (!expander.classList.contains('on')) return;
+  // Stop video
+  const expVideo = document.getElementById('exp-video');
+  if (expVideo) expVideo.src = '';
+  expander.style.transition = 'opacity 0.22s ease';
+  expander.style.opacity = '0';
+  backdrop.classList.remove('on');
+  setTimeout(() => {
+    expander.classList.remove('on');
+    // Clear inline opacity so CSS (#expander { opacity:0 }) takes over — prevents
+    // ghost-visible-but-non-interactive state that blocked the X button
+    expander.style.opacity = '';
+    expander.style.transition = '';
+  }, 240);
+}
+
+backdrop.addEventListener('click', closeExp);
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') { closeExp(); closeAbout(); }
+});
+
+// ════════════════════════════════════════════════════════════
+// FILTER
+// ════════════════════════════════════════════════════════════
+let activeFilter = 'all';
+
+function doFilter(cat) {
+  // Clicking the active filter → reset to all
+  if (cat !== 'all' && activeFilter === cat) cat = 'all';
+  activeFilter = cat;
+
+  document.querySelectorAll('.nf').forEach(b =>
+    b.classList.toggle('active', b.dataset.cat === cat));
+
+  cardEls.forEach(c => {
+    const shouldFade = cat !== 'all' && c.dataset.cat !== cat;
+    c.classList.toggle('faded', shouldFade);
+    // Set inline style — overrides CSS animation fill-mode which has higher cascade priority
+    c.style.opacity = shouldFade ? '0' : '';
+    c.style.pointerEvents = shouldFade ? 'none' : '';
+  });
+
+  // Timeline dots
+  document.querySelectorAll('.tl-post-dot').forEach(dot => {
+    const post = POSTS.find(p => p.id === parseInt(dot.dataset.id));
+    dot.classList.toggle('faded', cat !== 'all' && post?.cat !== cat);
+  });
+}
+
+// ════════════════════════════════════════════════════════════
+// SHARE
+// ════════════════════════════════════════════════════════════
+function sharePost(via) {
+  if (!currentPost) return;
+  const url  = `https://robinsmallenbroek.nl/post/${currentPost.id}`;
+  const text = `${currentPost.title}\n${url}`;
+
+  if (via === 'whatsapp') {
+    window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank', 'noopener');
+  } else if (via === 'signal') {
+    // Signal deep-link (works on mobile with Signal installed)
+    window.open(`sgnl://send?text=${encodeURIComponent(text)}`, '_blank', 'noopener');
+  } else if (via === 'copy') {
+    navigator.clipboard.writeText(url).then(() => {
+      const btn = document.getElementById('share-copy');
+      if (btn) {
+        btn.classList.add('copied');
+        btn.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Gekopieerd!`;
+        setTimeout(() => {
+          btn.classList.remove('copied');
+          btn.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Link kopiëren`;
+        }, 2200);
+      }
+    });
+  } else if (via === 'native' && navigator.share) {
+    navigator.share({ title: currentPost.title, url });
+  }
+}
+
+// ════════════════════════════════════════════════════════════
+// MODE TOGGLE (timeline / random)
+// ════════════════════════════════════════════════════════════
+const modeTrack = document.getElementById('modeTrack');
+const modeLabel = document.getElementById('modeLabel');
+
+function toggleMode() {
+  timelineMode = !timelineMode;
+  if (!timelineMode) currentRandomPos = genRandomPos(); // fresh random each toggle
+  modeTrack.classList.toggle('on', timelineMode);
+  modeLabel.textContent = timelineMode ? 'Tijdlijn' : 'Willekeurig';
+  tlEl.classList.toggle('hidden', !timelineMode);
+  positionCards(true);
+}
+
+// Init toggle state
+modeTrack.classList.add('on');
+
+// ════════════════════════════════════════════════════════════
+// LIGHT / DARK THEME
+// ════════════════════════════════════════════════════════════
+let isLight = false;
+const switchLbl = document.getElementById('switchLabel');
+
+function toggleTheme() {
+  const svg = document.querySelector('.sw-svg');
+  svg.classList.add('sw-flipping');
+  // Swap theme at midpoint of flip (when rocker is briefly invisible)
+  setTimeout(() => {
+    isLight = !isLight;
+    document.body.classList.toggle('light', isLight);
+    switchLbl.textContent = isLight ? 'Light' : 'Dark';
+    cardEls.forEach((el, i) => { if (POSTS[i].type === 'text') el.style.background = ''; });
+  }, 160);
+  setTimeout(() => svg.classList.remove('sw-flipping'), 340);
+}
+
+// ════════════════════════════════════════════════════════════
+// ABOUT
+// ════════════════════════════════════════════════════════════
+function openAbout()  { document.getElementById('about-panel').classList.add('on'); }
+function closeAbout() { document.getElementById('about-panel').classList.remove('on'); }
+
+// ════════════════════════════════════════════════════════════
+// SELF CARD
+// ════════════════════════════════════════════════════════════
+const selfCard = document.getElementById('self-card');
+let selfCollapsed = false;
+
+function collapseSelf(e) {
+  e.stopPropagation(); // don't trigger openSelf
+  selfCollapsed = !selfCollapsed;
+  selfCard.classList.toggle('collapsed', selfCollapsed);
+  if (selfCollapsed) {
+    // Clicking collapsed card re-expands
+    selfCard.addEventListener('click', expandSelf, { once: true });
+  }
+}
+
+function expandSelf() {
+  selfCollapsed = false;
+  selfCard.classList.remove('collapsed');
+}
+
+// Click on self-card body → open in expander like a regular card
+const SELF_POST = {
+  id: 'self', cat: 'self', label: 'Over de auteur', color: 'var(--self)',
+  type: 'text',
+  title: 'Robin Smallenbroek',
+  date: '2026', read: '',
+  img: null, videoUrl: null,
+  body: `<p>Robin Smallenbroek werkt op het snijvlak van organisatieverandering, sociale innovatie, kunst en sport.</p>
+<p>Dit is de plek waar die werelden samenkomen — niet als vakje, maar als perspectief op hoe dingen anders kunnen.</p>
+<p>Schrijft over wat de wereld beweegt — en wat haar kan bewegen.</p>`
+};
+
+function openSelf() {
+  if (selfCollapsed) return;
+  currentPost = SELF_POST;
+  const rect = selfCard.getBoundingClientRect();
+
+  document.getElementById('exp-label').textContent = 'Over de auteur';
+  const expImg   = document.getElementById('exp-img');
+  const expVideo = document.getElementById('exp-video');
+  expImg.style.display   = 'none';
+  expVideo.style.display = 'none';
+  expVideo.src = '';
+
+  document.getElementById('exp-cat').innerHTML =
+    `<span class="exp-dot" style="background:var(--self)"></span><span style="color:var(--self)">Robin Smallenbroek</span>`;
+  document.getElementById('exp-title').textContent = 'Robin Smallenbroek';
+  document.getElementById('exp-meta').innerHTML =
+    `<span>robin@robinsmallenbroek.nl</span><span>·</span><span>linkedin.com/in/robinsmallenbroek</span>`;
+  document.getElementById('exp-text').innerHTML = SELF_POST.body;
+  expander.style.borderTopColor = 'var(--self)';
+
+  const copyBtn = document.getElementById('share-copy');
+  if (copyBtn) copyBtn.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Link kopiëren`;
+
+  expander.style.transition = 'none';
+  expander.style.opacity = '1';
+  expander.style.top    = rect.top    + 'px';
+  expander.style.left   = rect.left   + 'px';
+  expander.style.width  = rect.width  + 'px';
+  expander.style.height = rect.height + 'px';
+  expander.classList.add('on');
+  expander.scrollTop = 0;
+  expander.getBoundingClientRect();
+
+  const tw = Math.min(780, window.innerWidth * 0.92);
+  const th = window.innerHeight * 0.86;
+  const ea = 'cubic-bezier(0.25,0,0,1)';
+  expander.style.transition = `top .46s ${ea}, left .46s ${ea}, width .46s ${ea}, height .46s ${ea}`;
+  expander.style.top    = ((window.innerHeight - th) / 2) + 'px';
+  expander.style.left   = ((window.innerWidth  - tw) / 2) + 'px';
+  expander.style.width  = tw + 'px';
+  expander.style.height = th + 'px';
+  backdrop.classList.add('on');
+}
+
+// ════════════════════════════════════════════════════════════
+// TICKER
+// ════════════════════════════════════════════════════════════
+const TICKER_ITEMS = [
+  { label:'Org. Innovatie', color:'var(--org)' },
+  { label:'Social Impact',  color:'var(--impact)' },
+  { label:'Art',            color:'var(--art)' },
+  { label:'Sport',          color:'var(--sport)' },
+];
+const tickerEl = document.getElementById('ticker');
+[...Array(8)].forEach(() => {
+  TICKER_ITEMS.forEach(item => {
+    const s = document.createElement('span');
+    s.className = 'ticker-item';
+    s.innerHTML = `<span class="ticker-dot" style="background:${item.color}"></span>${item.label}`;
+    tickerEl.appendChild(s);
+  });
+});
+
+</script>
+</body>
+</html>
