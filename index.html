@@ -1211,6 +1211,78 @@ body.light #about-bg { background: rgba(0,0,0,0.45); }
   .share-btns { flex-direction: column; }
   .share-btn  { width: 100%; justify-content: center; }
 
+  #mobile-content { padding: 0 8px; }
+  #mobile-typewriter { font-size: 15px; }
+  #mobile-sub { font-size: 12px; }
+
+}
+
+/* ── MOBIEL LANDINGSSCHERM ───────────────────────────────────── */
+/* Verborgen op desktop */
+#mobile-screen { display: none; }
+
+@media (max-width: 768px) {
+  /* Scherm zelf */
+  #mobile-screen {
+    display: flex;
+    position: fixed;
+    inset: 0;
+    z-index: 900;                          /* boven alles */
+    background: var(--bg);
+    align-items: center;
+    justify-content: flex-start;
+    padding: 0;
+    transition: background 0.4s;
+  }
+  /* Dot-grid — zelfde als portfolio-panel */
+  #mobile-screen::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(circle, var(--dot) 1px, transparent 1px);
+    background-size: 32px 32px;
+    pointer-events: none;
+    z-index: 0;
+  }
+  /* Content gecentreerd in beeld, licht naar links uitgelijnd */
+  #mobile-content {
+    position: relative;
+    z-index: 1;
+    max-width: 480px;
+    width: 100%;
+    padding: 0 32px;
+    margin: 0 auto;
+  }
+  /* Eerste alinea — typewriter */
+  #mobile-typewriter {
+    font-family: var(--mono);
+    font-size: 16px;
+    line-height: 1.9;
+    color: var(--text);
+    letter-spacing: 0.04em;
+    transition: color 0.4s;
+    min-height: 1em;         /* voorkomt layout-shift vóór tekst start */
+  }
+  /* Link 'hier' — initieel onzichtbaar, verschijnt na pre-tekst */
+  #mt-link {
+    color: var(--text);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    opacity: 0;
+    transition: opacity 0.3s ease, color 0.4s;
+  }
+  /* Tweede alinea — verschijnt na typewriter */
+  #mobile-sub {
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 1.9;
+    color: var(--dim);
+    margin-top: 28px;
+    opacity: 0;
+    transition: opacity 0.7s ease, color 0.4s;
+    letter-spacing: 0.03em;
+  }
+  #mobile-sub.visible { opacity: 1; }
 }
 
 </style>
@@ -2635,6 +2707,60 @@ const tickerEl = document.getElementById('ticker');
   });
 });
 
+// ════════════════════════════════════════════════════════════
+// MOBILE LANDING SCREEN — typewriter
+// ════════════════════════════════════════════════════════════
+(function initMobileScreen() {
+  if (window.innerWidth > 768) return;   // desktop: skip entirely
+
+  const pre  = document.getElementById('mt-pre');
+  const link = document.getElementById('mt-link');
+  const post = document.getElementById('mt-post');
+  const sub  = document.getElementById('mobile-sub');
+  if (!pre) return;
+
+  const PRE_TEXT  = 'Ik werk aan pogingen om de maatschappij een stukje mooier te maken. Je kan me ';
+  const POST_TEXT = ' bereiken.';
+  const SPEED     = 38; // ms per character
+
+  function typeInto(el, text, done) {
+    let i = 0;
+    const t = setInterval(() => {
+      el.textContent = text.slice(0, ++i);
+      if (i >= text.length) { clearInterval(t); done && done(); }
+    }, SPEED);
+  }
+
+  setTimeout(() => {
+    typeInto(pre, PRE_TEXT, () => {
+      // Show link instantly after pre-text finishes
+      link.style.opacity = '1';
+      setTimeout(() => {
+        typeInto(post, POST_TEXT, () => {
+          // Fade in the sub-line
+          setTimeout(() => sub && sub.classList.add('visible'), 500);
+        });
+      }, 120);
+    });
+  }, 400);
+})();
+
 </script>
+
+<!-- MOBILE LANDING SCREEN (verborgen op desktop via CSS) -->
+<div id="mobile-screen">
+  <div id="mobile-content">
+    <p id="mobile-typewriter">
+      <span id="mt-pre"></span><a
+        id="mt-link"
+        href="https://www.linkedin.com/in/robinsmallenbroek/"
+        target="_blank"
+        rel="noopener noreferrer"
+      >hier</a><span id="mt-post"></span>
+    </p>
+    <p id="mobile-sub">Via de desktop versie is deze website een blog met inspiratie en portfolio met eigen werk.</p>
+  </div>
+</div>
+
 </body>
 </html>
