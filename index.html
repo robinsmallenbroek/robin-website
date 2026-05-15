@@ -1951,6 +1951,13 @@ window.addEventListener('mouseup', e => {
 });
 
 // touch
+// Vertical mouse-wheel → horizontal scroll
+canvasEl.addEventListener('wheel', e => {
+  if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) return; // native horizontal scroll, leave it
+  e.preventDefault();
+  canvasEl.scrollLeft += e.deltaY * 1.2;
+}, { passive: false });
+
 canvasEl.addEventListener('touchstart', e => {
   if (e.target.closest('.resize-handle')) return;
   const card = e.target.closest('.card');
