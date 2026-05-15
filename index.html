@@ -2707,44 +2707,6 @@ const tickerEl = document.getElementById('ticker');
   });
 });
 
-// ════════════════════════════════════════════════════════════
-// MOBILE LANDING SCREEN — typewriter
-// ════════════════════════════════════════════════════════════
-(function initMobileScreen() {
-  if (window.innerWidth > 768) return;   // desktop: skip entirely
-
-  const pre  = document.getElementById('mt-pre');
-  const link = document.getElementById('mt-link');
-  const post = document.getElementById('mt-post');
-  const sub  = document.getElementById('mobile-sub');
-  if (!pre) return;
-
-  const PRE_TEXT  = 'Ik werk aan pogingen om de maatschappij een stukje mooier te maken. Je kan me ';
-  const POST_TEXT = ' bereiken.';
-  const SPEED     = 38; // ms per character
-
-  function typeInto(el, text, done) {
-    let i = 0;
-    const t = setInterval(() => {
-      el.textContent = text.slice(0, ++i);
-      if (i >= text.length) { clearInterval(t); done && done(); }
-    }, SPEED);
-  }
-
-  setTimeout(() => {
-    typeInto(pre, PRE_TEXT, () => {
-      // Show link instantly after pre-text finishes
-      link.style.opacity = '1';
-      setTimeout(() => {
-        typeInto(post, POST_TEXT, () => {
-          // Fade in the sub-line
-          setTimeout(() => sub && sub.classList.add('visible'), 500);
-        });
-      }, 120);
-    });
-  }, 400);
-})();
-
 </script>
 
 <!-- MOBILE LANDING SCREEN (verborgen op desktop via CSS) -->
@@ -2761,6 +2723,42 @@ const tickerEl = document.getElementById('ticker');
     <p id="mobile-sub">Via de desktop versie is deze website een blog met inspiratie en portfolio met eigen werk.</p>
   </div>
 </div>
+
+<!-- MOBILE TYPEWRITER — apart script zodat DOM-elementen al bestaan -->
+<script>
+(function() {
+  if (window.innerWidth > 768) return;
+
+  const pre  = document.getElementById('mt-pre');
+  const link = document.getElementById('mt-link');
+  const post = document.getElementById('mt-post');
+  const sub  = document.getElementById('mobile-sub');
+  if (!pre) return;
+
+  const PRE_TEXT  = 'Ik werk aan pogingen om de maatschappij een stukje mooier te maken. Je kan me ';
+  const POST_TEXT = ' bereiken.';
+  const SPEED     = 38;
+
+  function typeInto(el, text, done) {
+    let i = 0;
+    const t = setInterval(() => {
+      el.textContent = text.slice(0, ++i);
+      if (i >= text.length) { clearInterval(t); done && done(); }
+    }, SPEED);
+  }
+
+  setTimeout(() => {
+    typeInto(pre, PRE_TEXT, () => {
+      link.style.opacity = '1';
+      setTimeout(() => {
+        typeInto(post, POST_TEXT, () => {
+          setTimeout(() => sub && sub.classList.add('visible'), 500);
+        });
+      }, 120);
+    });
+  }, 400);
+})();
+</script>
 
 </body>
 </html>
