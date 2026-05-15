@@ -956,6 +956,19 @@ body.light #about-bg { background: rgba(0,0,0,0.45); }
 /* animation fill-mode can win over .faded — override with !important */
 .card.faded { opacity: 0 !important; pointer-events: none !important; }
 
+/* ── GOKU EASTER EGG ─────────────────────────────────────── */
+#goku-egg {
+  color: var(--text);
+  cursor: pointer;
+  position: absolute;
+  z-index: 50;
+  transition: transform 0.14s cubic-bezier(0.4,0,0.2,1);
+  transform-origin: bottom center;
+}
+#goku-egg.squash { transform: scaleY(0.06) scaleX(1.6); }
+#goku-egg:hover  { opacity: 0.8; }
+@media (max-width: 768px) { #goku-egg { display: none; } }
+
 /* ════════════════════════════════════════════════════════════
    RESPONSIVE — MOBILE ONLY
    Alle regels hieronder gelden uitsluitend op ≤768px.
@@ -2687,6 +2700,128 @@ document.addEventListener('click', closeLangMenu);
 
 // Init with English
 setLanguage('en');
+
+// ════════════════════════════════════════════════════════════
+// EASTER EGG — Baby Goku GT op de tijdlijn
+// ════════════════════════════════════════════════════════════
+(function addGoku() {
+  const ci = document.getElementById('canvas-inner');
+  if (!ci) return;
+
+  const div = document.createElement('div');
+  div.id = 'goku-egg';
+  div.style.left   = '700px';
+  div.style.bottom = '58px';
+  div.title        = '...';
+
+  div.innerHTML = `<svg width="120" height="90" viewBox="0 0 120 90"
+      fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5">
+
+    <!-- ══ STAANDE POSE ══ -->
+    <g id="goku-stand">
+      <!-- Haar — 5 spitzen, tallest centrespike is het meest iconisch -->
+      <path d="M46,47 L38,24 L44,32 L44,16 L50,28 L56,6 L62,26 L66,14 L70,30 L74,22 L76,36 L74,47"/>
+      <!-- Hoofd -->
+      <ellipse cx="60" cy="53" rx="14" ry="12"/>
+      <!-- Wenkbrauwen -->
+      <path stroke-width="1.2" d="M48,48 L55,47"/>
+      <path stroke-width="1.2" d="M65,47 L72,48"/>
+      <!-- Ogen (gevuld) -->
+      <circle cx="54" cy="51" r="2.2" fill="currentColor" stroke="none"/>
+      <circle cx="66" cy="51" r="2.2" fill="currentColor" stroke="none"/>
+      <!-- Neus -->
+      <path stroke-width="1" d="M59,56 L60,58 L61,56"/>
+      <!-- Mond (glimlach) -->
+      <path stroke-width="1.2" d="M52,62 Q60,67 68,62"/>
+      <!-- Nek -->
+      <path stroke-width="1.2" d="M55,65 L55,69 M65,65 L65,69"/>
+      <!-- Gi-lichaam -->
+      <path d="M48,69 L44,87 L76,87 L72,69 Z"/>
+      <!-- Gi-kraag V -->
+      <path stroke-width="1.2" d="M52,69 L60,75 L68,69"/>
+      <!-- Riem -->
+      <line x1="44" y1="80" x2="76" y2="80" stroke-width="1.2"/>
+      <rect x="55" y="77" width="10" height="6" rx="1" stroke-width="1"/>
+      <!-- Armen -->
+      <path d="M48,71 L36,82 L40,84"/>
+      <path d="M72,71 L84,82 L80,84"/>
+      <!-- Benen -->
+      <path d="M50,87 L48,90 M70,87 L72,90"/>
+      <!-- Voeten -->
+      <path d="M42,90 L54,90 M66,90 L78,90"/>
+      <!-- Staart -->
+      <path stroke-width="1.2" d="M68,80 Q80,76 82,66 Q83,58 78,60"/>
+    </g>
+
+    <!-- ══ KAMEHAMEHA POSE ══ -->
+    <g id="goku-kame" style="display:none">
+      <!-- Haar (verschoven naar links) -->
+      <path d="M10,47 L2,24 L8,32 L8,16 L14,28 L20,6 L26,26 L30,14 L34,30 L38,22 L40,36 L38,47"/>
+      <!-- Hoofd -->
+      <ellipse cx="24" cy="53" rx="14" ry="12"/>
+      <!-- Wenkbrauwen (gefronst, bepaald) -->
+      <path stroke-width="1.7" d="M12,48 L20,47"/>
+      <path stroke-width="1.7" d="M28,47 L36,48"/>
+      <!-- Ogen (samengeknepen — gefocuste blik) -->
+      <line x1="12" y1="51" x2="20" y2="51" stroke-width="1.6"/>
+      <line x1="28" y1="51" x2="36" y2="51" stroke-width="1.6"/>
+      <!-- Neus -->
+      <path stroke-width="1" d="M23,57 L24,59 L25,57"/>
+      <!-- Mond (vastberaden, strak) -->
+      <path stroke-width="1.2" d="M16,62 L32,62"/>
+      <!-- Nek -->
+      <path stroke-width="1.2" d="M19,65 L19,69 M29,65 L29,69"/>
+      <!-- Gi-lichaam (licht voorover) -->
+      <path d="M10,69 L6,87 L42,87 L38,69 Z"/>
+      <!-- Gi-kraag -->
+      <path stroke-width="1.2" d="M14,69 L22,75 L30,69"/>
+      <!-- Riem -->
+      <line x1="6" y1="80" x2="42" y2="80" stroke-width="1.2"/>
+      <rect x="17" y="77" width="10" height="6" rx="1" stroke-width="1"/>
+      <!-- Benen (breed energiestand) -->
+      <path d="M14,87 L6,90 M34,87 L42,90"/>
+      <!-- Voeten -->
+      <path d="M0,90 L14,90 M34,90 L48,90"/>
+      <!-- Armen uitgestrekt naar rechts -->
+      <path d="M10,71 L8,75 L54,73"/>
+      <path d="M38,73 L40,77 L54,75"/>
+      <!-- Handen (samen, uitgestookt) -->
+      <ellipse cx="57" cy="74" rx="6" ry="4"/>
+      <!-- Staart (waait achter door de kracht) -->
+      <path stroke-width="1.2" d="M28,80 Q18,76 16,66 Q15,58 20,60"/>
+      <!-- ~~~ KAMEHAMEHA ENERGIE ~~~ -->
+      <!-- Binnenste orb -->
+      <ellipse cx="72" cy="74" rx="9" ry="7" stroke-width="1.5"/>
+      <!-- Middelste ring -->
+      <ellipse cx="76" cy="74" rx="16" ry="12" stroke-width="1.2"/>
+      <!-- Buitenste ring -->
+      <ellipse cx="80" cy="74" rx="23" ry="16" stroke-width="0.9" opacity="0.7"/>
+      <!-- Energie-golf (typische ki-golf lijn) -->
+      <path stroke-width="1.4" d="M63,70 Q70,63 76,74 Q82,85 90,74 Q98,63 106,70"/>
+      <!-- Straal-omlijning (vaag) -->
+      <path stroke-width="0.9" opacity="0.6" d="M62,67 L112,55"/>
+      <path stroke-width="0.9" opacity="0.6" d="M62,81 L112,93"/>
+    </g>
+  </svg>`;
+
+  let isKame = false, busy = false;
+
+  div.addEventListener('click', e => {
+    if (busy) return;
+    e.stopPropagation();
+    busy  = true;
+    isKame = !isKame;
+    div.classList.add('squash');
+    setTimeout(() => {
+      document.getElementById('goku-stand').style.display = isKame ? 'none' : '';
+      document.getElementById('goku-kame').style.display  = isKame ? ''     : 'none';
+      div.classList.remove('squash');
+      setTimeout(() => { busy = false; }, 160);
+    }, 140);
+  });
+
+  ci.appendChild(div);
+})();
 
 // ════════════════════════════════════════════════════════════
 // TICKER
