@@ -797,35 +797,46 @@ body.light #exp-bar { background: rgba(222,218,210,0.95); }
 #exp-text { font-size: 14px; color: var(--dim); line-height: 1.9; user-select: text; }
 #exp-text p + p { margin-top: 12px; }
 
-/* ── PORTFOLIO PANEL ──────────────────────────────────────── */
+/* ── PORTFOLIO PANEL — vertical-scroll canvas, mirrors blog ── */
 #portfolio-panel {
   position: fixed; inset: 0; z-index: 300;
-  pointer-events: none; opacity: 0; transition: opacity 0.3s;
+  pointer-events: none; opacity: 0;
+  transition: opacity 0.3s, background 0.5s;
+  background: var(--bg);
 }
 #portfolio-panel.on { pointer-events: all; opacity: 1; }
-#pf-bg { position: absolute; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(12px); }
-body.light #pf-bg { background: rgba(0,0,0,0.5); }
+
+/* Same dot-grid as main page */
+#portfolio-panel::before {
+  content: '';
+  position: absolute; inset: 0;
+  background-image: radial-gradient(circle, var(--dot) 1px, transparent 1px);
+  background-size: 32px 32px;
+  pointer-events: none; z-index: 0;
+  transition: background-image 0.5s;
+}
+
 #pf-box {
-  position: absolute; inset: 48px 0 0 0;
-  background: var(--card);
-  border-top: 1.5px solid var(--text);
+  position: absolute; inset: 0;
   display: flex; flex-direction: column;
-  transition: background 0.4s, border-color 0.4s;
 }
+
+/* Nav-like header */
 #pf-header {
+  position: relative; z-index: 2;
+  height: 48px; flex-shrink: 0;
   display: flex; align-items: center; justify-content: space-between;
-  padding: 14px 28px;
+  padding: 0 24px;
+  background: rgba(6,6,6,0.88);
+  backdrop-filter: blur(16px);
   border-bottom: 1px solid var(--border);
-  flex-shrink: 0; background: inherit;
-  transition: border-color 0.4s;
+  transition: background 0.5s, border-color 0.4s;
 }
-.pf-header-left { display: flex; align-items: baseline; gap: 16px; }
+body.light #pf-header { background: rgba(230,227,221,0.88); }
+
 .pf-title-label {
-  font-family: var(--mono); font-size: 10px; letter-spacing: 0.16em;
-  text-transform: uppercase; color: var(--muted);
-}
-.pf-heading {
-  font-size: 18px; font-weight: 700; letter-spacing: -0.01em;
+  font-family: var(--mono); font-size: 11px; letter-spacing: 0.14em;
+  text-transform: uppercase; color: var(--text); transition: color 0.4s;
 }
 #pf-x {
   font-family: var(--mono); background: none; border: 1px solid var(--border);
@@ -834,79 +845,43 @@ body.light #pf-bg { background: rgba(0,0,0,0.5); }
   cursor: pointer; font-size: 14px; border-radius: 1px; transition: all 0.15s;
 }
 #pf-x:hover { border-color: var(--text); color: var(--text); }
-#pf-layout {
-  display: flex; flex: 1; overflow: hidden;
-}
-#pf-content {
-  flex: 1; overflow-y: auto;
-  padding: 48px 48px 80px;
-  display: flex; flex-direction: column; gap: 0;
-}
-#pf-timeline {
-  width: 140px; flex-shrink: 0;
-  border-left: 1px solid var(--border);
-  position: relative; overflow: hidden;
-  transition: border-color 0.4s;
-}
-.pf-tl-line {
-  position: absolute;
-  top: 0; bottom: 0; left: 50%;
-  width: 1px; background: var(--border);
-  transform: translateX(-50%);
-  transition: background 0.4s;
-}
-.pf-tl-item {
-  position: absolute; left: 0; right: 0;
-  display: flex; align-items: center; gap: 0;
-}
-.pf-tl-dot {
-  position: absolute; left: 50%;
-  width: 8px; height: 8px; border-radius: 50%;
-  transform: translate(-50%, -50%);
-  background: var(--text); border: 2px solid var(--card);
-  transition: background 0.4s, border-color 0.4s;
-}
-.pf-tl-year {
-  position: absolute; right: calc(50% + 14px);
-  font-family: var(--mono); font-size: 8px; letter-spacing: 0.1em;
-  color: var(--muted); white-space: nowrap; transform: translateY(-50%);
-  transition: color 0.4s;
-}
 
-/* Portfolio project card */
-.pf-project {
-  padding: 32px 0 32px;
-  border-bottom: 1px solid var(--border);
-  display: grid; grid-template-columns: 100px 1fr;
-  gap: 28px; align-items: start;
-  transition: border-color 0.4s;
-  cursor: default;
+/* Vertical-scroll canvas */
+#pf-scroll {
+  flex: 1; position: relative; z-index: 1;
+  overflow-x: hidden; overflow-y: scroll;
 }
-.pf-project:first-child { padding-top: 0; }
-.pf-year {
-  font-family: var(--mono); font-size: 10px; letter-spacing: 0.14em;
-  text-transform: uppercase; color: var(--muted); padding-top: 4px;
-  transition: color 0.4s;
+#pf-scroll::-webkit-scrollbar { width: 2px; }
+#pf-scroll::-webkit-scrollbar-track { background: transparent; }
+#pf-scroll::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+#pf-inner { position: relative; width: 100%; }
+
+/* Vertical timeline (mirrors horizontal TL styling) */
+.pf-vtl-line {
+  position: absolute; top: 0; bottom: 0; width: 1px;
+  background: var(--tl-line); transition: background 0.4s;
 }
-.pf-info { display: flex; flex-direction: column; gap: 10px; }
-.pf-cat-pill {
+.pf-vtl-year {
+  position: absolute;
+  font-family: var(--mono); font-size: 11px; font-weight: 700;
+  letter-spacing: 0.10em; color: var(--tl-text); opacity: 0.75;
+  transform: translateY(-50%); white-space: nowrap; transition: color 0.4s;
+}
+.pf-vtl-qtr {
+  position: absolute;
   font-family: var(--mono); font-size: 9px; letter-spacing: 0.14em;
-  text-transform: uppercase; padding: 3px 8px; border-radius: 1px;
-  width: fit-content;
+  text-transform: uppercase; color: var(--tl-text);
+  transform: translateY(-50%); white-space: nowrap; transition: color 0.4s;
 }
-.pf-name {
-  font-size: 20px; font-weight: 700; line-height: 1.2; letter-spacing: -0.01em;
-  transition: color 0.4s;
+.pf-vtl-tick {
+  position: absolute; height: 1px;
+  background: var(--tl-line); transform: translateY(-50%); transition: background 0.4s;
 }
-.pf-desc {
-  font-size: 13px; color: var(--dim); line-height: 1.7;
-  transition: color 0.4s;
-}
-.pf-tags { display: flex; flex-wrap: wrap; gap: 6px; padding-top: 4px; }
-.pf-tag {
-  font-family: var(--mono); font-size: 8px; letter-spacing: 0.12em;
-  text-transform: uppercase; color: var(--muted); border: 1px solid var(--border);
-  padding: 4px 9px; border-radius: 1px; transition: all 0.4s;
+.pf-vtl-dot {
+  position: absolute; width: 7px; height: 7px; border-radius: 50%;
+  transform: translate(-50%, -50%);
+  border: 1.5px solid var(--bg); transition: border-color 0.4s;
 }
 
 /* ── ABOUT PANEL ──────────────────────────────────────────── */
@@ -1107,24 +1082,16 @@ body.light #about-bg { background: rgba(0,0,0,0.45); }
   </div>
 </div>
 
-<!-- PORTFOLIO -->
+<!-- PORTFOLIO — vertical canvas, same look as blog -->
 <div id="portfolio-panel">
-  <div id="pf-bg" onclick="closePortfolio()"></div>
   <div id="pf-box">
     <div id="pf-header">
-      <div class="pf-header-left">
-        <span class="pf-title-label">Own Work</span>
-        <span class="pf-heading">Projecten</span>
-      </div>
+      <span class="pf-title-label">Own Work</span>
       <button id="pf-x" onclick="closePortfolio()">×</button>
     </div>
-    <div id="pf-layout">
-      <div id="pf-content">
-        <!-- injected by JS -->
-      </div>
-      <div id="pf-timeline">
-        <div class="pf-tl-line"></div>
-        <!-- injected by JS -->
+    <div id="pf-scroll">
+      <div id="pf-inner">
+        <!-- timeline + cards injected by JS -->
       </div>
     </div>
   </div>
@@ -1764,68 +1731,176 @@ const PORTFOLIO_PROJECTS = [
 ];
 
 (function buildPortfolio() {
-  const content  = document.getElementById('pf-content');
-  const timeline = document.getElementById('pf-timeline');
-  const contentH = window.innerHeight; // approximate
+  const scrollEl = document.getElementById('pf-scroll');
+  const innerEl  = document.getElementById('pf-inner');
+  if (!scrollEl || !innerEl) return;
 
-  PORTFOLIO_PROJECTS.forEach((p, i) => {
-    // Project card
-    const card = document.createElement('div');
-    card.className = 'pf-project';
-    card.innerHTML = `
-      <div class="pf-year">${p.year}</div>
-      <div class="pf-info">
-        <span class="pf-cat-pill" style="background:color-mix(in srgb,${p.color} 13%,transparent);color:${p.color}">${p.label}</span>
-        <div class="pf-name">${p.title}</div>
-        <div class="pf-desc">${p.desc}</div>
-        <div class="pf-tags">${p.tags.map(t=>`<span class="pf-tag">${t}</span>`).join('')}</div>
-      </div>`;
-    content.appendChild(card);
-  });
+  // ── Layout constants ──
+  const TL_X    = 120;   // x of vertical timeline line
+  const INNER_H = 3000;  // tall canvas (px)
+  const PAD_T   = 100;   // top padding before first event
+  const PAD_B   = 120;   // bottom padding after last event
 
-  // Build timeline dots (positioned after layout renders)
-  function buildTlDots() {
-    // Remove old dots
-    timeline.querySelectorAll('.pf-tl-item').forEach(d => d.remove());
-    const tlH = timeline.offsetHeight;
-    const N = PORTFOLIO_PROJECTS.length;
-    const padding = 60;
-    PORTFOLIO_PROJECTS.forEach((p, i) => {
-      const cards = content.querySelectorAll('.pf-project');
-      if (!cards[i]) return;
-      const cardTop = cards[i].offsetTop;
-      const contentH = content.scrollHeight;
-      const yPct = Math.min(0.9, Math.max(0.05, (cardTop + 40) / contentH));
-      const yPx = padding + yPct * (tlH - 2 * padding);
+  // Date range: Jan 2025 → Jun 2026 (18 months)
+  const D_START = 2025 + 0  / 12;
+  const D_END   = 2026 + 6  / 12;
 
-      const item = document.createElement('div');
-      item.className = 'pf-tl-item';
-      item.style.top = yPx + 'px';
+  innerEl.style.height = INNER_H + 'px';
 
-      const dot = document.createElement('div');
-      dot.className = 'pf-tl-dot';
-      dot.style.background = p.color;
-
-      const yr = document.createElement('div');
-      yr.className = 'pf-tl-year';
-      yr.textContent = p.year;
-
-      item.appendChild(dot);
-      item.appendChild(yr);
-      timeline.appendChild(item);
-    });
+  function dateToY(yr, mo) {
+    const v = yr + mo / 12;
+    return PAD_T + ((v - D_START) / (D_END - D_START)) * (INNER_H - PAD_T - PAD_B);
   }
 
-  // Sync timeline dots with content scroll
-  document.getElementById('pf-content').addEventListener('scroll', () => {
-    const scrolled = document.getElementById('pf-content').scrollTop;
-    const scrollH = document.getElementById('pf-content').scrollHeight - document.getElementById('pf-content').clientHeight;
-    const scrollPct = scrollH > 0 ? scrolled / scrollH : 0;
-    // Update progress line height as visual indicator
+  // ── Vertical timeline line ──
+  const line = document.createElement('div');
+  line.className = 'pf-vtl-line';
+  line.style.left = TL_X + 'px';
+  innerEl.appendChild(line);
+
+  // ── Year + quarter labels ──
+  [[2025,1],[2025,2],[2025,3],[2025,4],[2026,1],[2026,2]].forEach(([yr, q]) => {
+    const mo = (q - 1) * 3;
+    const y  = dateToY(yr, mo);
+    const isYearStart = (q === 1);
+
+    if (isYearStart) {
+      // Bold year label
+      const lbl = document.createElement('div');
+      lbl.className = 'pf-vtl-year';
+      lbl.style.cssText = `top:${y}px;right:${TL_X + 12}px;`;
+      lbl.style.left = '0';
+      lbl.style.textAlign = 'right';
+      lbl.style.paddingRight = '14px';
+      lbl.textContent = yr;
+      innerEl.appendChild(lbl);
+      // Longer tick for year
+      const tick = document.createElement('div');
+      tick.className = 'pf-vtl-tick';
+      tick.style.cssText = `top:${y}px;left:${TL_X - 7}px;width:15px;`;
+      innerEl.appendChild(tick);
+    } else {
+      // Quarter label
+      const lbl = document.createElement('div');
+      lbl.className = 'pf-vtl-qtr';
+      lbl.style.cssText = `top:${y}px;left:0;right:0;text-align:right;padding-right:${TL_X - 10}px;`;
+      lbl.textContent = `Q${q}`;
+      innerEl.appendChild(lbl);
+      // Short tick
+      const tick = document.createElement('div');
+      tick.className = 'pf-vtl-tick';
+      tick.style.cssText = `top:${y}px;left:${TL_X - 5}px;width:11px;`;
+      innerEl.appendChild(tick);
+    }
   });
 
-  setTimeout(buildTlDots, 80);
-  window.addEventListener('resize', buildTlDots);
+  // ── Cards — sorted oldest → newest (top → bottom) ──
+  const sorted = [...PORTFOLIO_PROJECTS].sort(
+    (a, b) => (a.year * 12 + a.month) - (b.year * 12 + b.month)
+  );
+
+  // Stagger x positions so cards scatter like blog (fraction of space right of TL)
+  const X_FRACS = [0.04, 0.36, 0.10, 0.48, 0.06];
+  const CARD_W  = 300;
+
+  const pfCardEls = [];
+
+  sorted.forEach((proj, i) => {
+    const cy   = dateToY(proj.year, proj.month);       // centre y for this project
+    const avail = Math.max(CARD_W + 20,
+                  (innerEl.offsetWidth || window.innerWidth) - TL_X - 40);
+    const cx   = TL_X + 30 + Math.round(X_FRACS[i % X_FRACS.length] * (avail - CARD_W));
+
+    // Timeline dot
+    const dot = document.createElement('div');
+    dot.className = 'pf-vtl-dot';
+    dot.style.cssText = `left:${TL_X}px;top:${cy}px;background:${proj.color};`;
+    innerEl.appendChild(dot);
+
+    // Card (same .card classes as blog)
+    const el = document.createElement('div');
+    el.className = 'card card-text';
+    el.dataset.cat = proj.cat;
+    el.style.cssText = `
+      width:${CARD_W}px;
+      left:${cx}px;
+      top:${Math.round(cy - 90)}px;
+      z-index:${i + 1};
+      animation-delay:${i * 0.07}s;
+      background:var(--${proj.cat}-bg);
+    `;
+
+    el.innerHTML = `
+      <div class="bg-index">${String(i + 1).padStart(2, '0')}</div>
+      <div class="card-body" style="padding:18px 20px 20px;min-height:180px;
+           justify-content:space-between;display:flex;flex-direction:column">
+        <div>
+          <div class="card-tag" style="margin-bottom:12px">
+            <span class="tag-pill"
+              style="background:color-mix(in srgb,${proj.color} 13%,transparent);color:${proj.color}">
+              ${proj.label}
+            </span>
+            <span class="tag-idx">${proj.year}</span>
+          </div>
+          <div class="card-title" style="font-size:clamp(14px,1.6vw,18px)">${proj.title}</div>
+        </div>
+        <div class="card-footer">
+          <span class="card-date">${proj.tags.slice(0, 2).join(' · ')}</span>
+        </div>
+      </div>
+      <div class="resize-handle">
+        <svg viewBox="0 0 10 10" fill="none">
+          <path d="M1 9L9 1M5 9L9 5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+        </svg>
+      </div>`;
+
+    innerEl.appendChild(el);
+    pfCardEls.push(el);
+  });
+
+  // ── Drag & Resize for portfolio cards ──
+  let pfDrag = null, pfResz = null;
+
+  scrollEl.addEventListener('mousedown', e => {
+    e.preventDefault();
+    if (e.target.closest('.resize-handle')) {
+      const card = e.target.closest('.card');
+      if (!pfCardEls.includes(card)) return;
+      pfResz = { el: card, startX: e.clientX, startW: card.offsetWidth };
+      document.body.style.cursor = 'nwse-resize';
+      return;
+    }
+    const card = e.target.closest('.card');
+    if (!card || !pfCardEls.includes(card)) return;
+    let maxZ = 0;
+    pfCardEls.forEach(c => { maxZ = Math.max(maxZ, parseInt(c.style.zIndex) || 0); });
+    card.style.zIndex = maxZ + 1;
+    const rect = card.getBoundingClientRect();
+    pfDrag = {
+      el: card, moved: false,
+      ox: e.clientX - rect.left, oy: e.clientY - rect.top,
+      sx: e.clientX,              sy: e.clientY,
+    };
+    card.classList.add('dragging');
+  });
+
+  window.addEventListener('mousemove', e => {
+    if (pfResz) {
+      pfResz.el.style.width = Math.max(200, pfResz.startW + (e.clientX - pfResz.startX)) + 'px';
+      return;
+    }
+    if (!pfDrag) return;
+    if (Math.hypot(e.clientX - pfDrag.sx, e.clientY - pfDrag.sy) > 4) pfDrag.moved = true;
+    if (!pfDrag.moved) return;
+    const ir = innerEl.getBoundingClientRect();
+    pfDrag.el.style.left = (e.clientX - ir.left  - pfDrag.ox) + 'px';
+    pfDrag.el.style.top  = (e.clientY - ir.top   - pfDrag.oy + scrollEl.scrollTop) + 'px';
+  });
+
+  window.addEventListener('mouseup', () => {
+    if (pfResz) { document.body.style.cursor = ''; pfResz = null; return; }
+    if (pfDrag) { pfDrag.el.classList.remove('dragging'); pfDrag = null; }
+  });
 })();
 
 function openPortfolio()  { document.getElementById('portfolio-panel').classList.add('on'); }
