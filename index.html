@@ -18,8 +18,8 @@
   --dim:      #666;
   --dot:      rgba(255,255,255,0.045);
   --tl:       rgba(255,255,255,0.12);
-  --tl-text:  rgba(255,255,255,0.50);
-  --tl-line:  rgba(255,255,255,0.20);
+  --tl-text:  rgba(255,255,255,0.88);
+  --tl-line:  rgba(255,255,255,0.40);
   --self:     #d4648a;
 
   --org:    #5b8dee;
@@ -162,7 +162,7 @@ body.light nav { background: rgba(230,227,221,0.88); }
 }
 
 .sw-svg {
-  width: 34px; height: 56px;
+  width: 40px; height: 62px;
   overflow: visible;
   color: var(--text);
   transition: color 0.4s;
@@ -219,6 +219,10 @@ body.light .sw-rock-edge { fill: rgba(255,255,255,0.55); }
 .sw-rock-on,  .sw-rock-edge-on  { opacity: 0; transition: opacity 0.15s; }
 body.light .sw-rock-off, body.light .sw-rock-edge-off { opacity: 0; }
 body.light .sw-rock-on,  body.light .sw-rock-edge-on  { opacity: 1; }
+
+/* Pivot center line */
+.sw-pivot { stroke: currentColor; opacity: 0.18; stroke-dasharray: 2 2; }
+body.light .sw-pivot { opacity: 0.12; }
 
 /* Indicator bars */
 .sw-ind { stroke: currentColor; stroke-linecap: round; }
@@ -465,7 +469,7 @@ body.light .card-footer { border-top-color: rgba(0,0,0,0.06); }
   padding: 7px;
   opacity: 0; transition: opacity 0.2s;
 }
-.card:hover .resize-handle { opacity: 1; }
+.card:hover .resize-handle, #self-card:hover .resize-handle { opacity: 1; }
 .resize-handle svg { width: 10px; height: 10px; opacity: 0.5; pointer-events: none; }
 
 /* ── TIMELINE ─────────────────────────────────────────────── */
@@ -779,8 +783,118 @@ body.light #exp-bar { background: rgba(222,218,210,0.95); }
 #exp-meta { font-family: var(--mono); font-size: 9px; color: var(--dim); letter-spacing: 0.08em; display: flex; gap: 12px; padding-bottom: 16px; border-bottom: 1px solid var(--border); transition: border-color 0.4s; }
 #exp-text { font-size: 14px; color: var(--dim); line-height: 1.9; user-select: text; }
 #exp-text p + p { margin-top: 12px; }
-#exp-cta { font-family: var(--mono); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text); border: 1px solid var(--border); padding: 11px 18px; border-radius: 1px; width: fit-content; margin-top: 6px; cursor: pointer; background: none; transition: all 0.2s; }
-#exp-cta:hover { background: var(--text); color: var(--bg); }
+
+/* ── PORTFOLIO PANEL ──────────────────────────────────────── */
+#portfolio-panel {
+  position: fixed; inset: 0; z-index: 300;
+  pointer-events: none; opacity: 0; transition: opacity 0.3s;
+}
+#portfolio-panel.on { pointer-events: all; opacity: 1; }
+#pf-bg { position: absolute; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(12px); }
+body.light #pf-bg { background: rgba(0,0,0,0.5); }
+#pf-box {
+  position: absolute; inset: 48px 0 0 0;
+  background: var(--card);
+  border-top: 1.5px solid var(--text);
+  display: flex; flex-direction: column;
+  transition: background 0.4s, border-color 0.4s;
+}
+#pf-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 28px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0; background: inherit;
+  transition: border-color 0.4s;
+}
+.pf-header-left { display: flex; align-items: baseline; gap: 16px; }
+.pf-title-label {
+  font-family: var(--mono); font-size: 10px; letter-spacing: 0.16em;
+  text-transform: uppercase; color: var(--muted);
+}
+.pf-heading {
+  font-size: 18px; font-weight: 700; letter-spacing: -0.01em;
+}
+#pf-x {
+  font-family: var(--mono); background: none; border: 1px solid var(--border);
+  color: var(--dim); width: 26px; height: 26px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; font-size: 14px; border-radius: 1px; transition: all 0.15s;
+}
+#pf-x:hover { border-color: var(--text); color: var(--text); }
+#pf-layout {
+  display: flex; flex: 1; overflow: hidden;
+}
+#pf-content {
+  flex: 1; overflow-y: auto;
+  padding: 48px 48px 80px;
+  display: flex; flex-direction: column; gap: 0;
+}
+#pf-timeline {
+  width: 140px; flex-shrink: 0;
+  border-left: 1px solid var(--border);
+  position: relative; overflow: hidden;
+  transition: border-color 0.4s;
+}
+.pf-tl-line {
+  position: absolute;
+  top: 0; bottom: 0; left: 50%;
+  width: 1px; background: var(--border);
+  transform: translateX(-50%);
+  transition: background 0.4s;
+}
+.pf-tl-item {
+  position: absolute; left: 0; right: 0;
+  display: flex; align-items: center; gap: 0;
+}
+.pf-tl-dot {
+  position: absolute; left: 50%;
+  width: 8px; height: 8px; border-radius: 50%;
+  transform: translate(-50%, -50%);
+  background: var(--text); border: 2px solid var(--card);
+  transition: background 0.4s, border-color 0.4s;
+}
+.pf-tl-year {
+  position: absolute; right: calc(50% + 14px);
+  font-family: var(--mono); font-size: 8px; letter-spacing: 0.1em;
+  color: var(--muted); white-space: nowrap; transform: translateY(-50%);
+  transition: color 0.4s;
+}
+
+/* Portfolio project card */
+.pf-project {
+  padding: 32px 0 32px;
+  border-bottom: 1px solid var(--border);
+  display: grid; grid-template-columns: 100px 1fr;
+  gap: 28px; align-items: start;
+  transition: border-color 0.4s;
+  cursor: default;
+}
+.pf-project:first-child { padding-top: 0; }
+.pf-year {
+  font-family: var(--mono); font-size: 10px; letter-spacing: 0.14em;
+  text-transform: uppercase; color: var(--muted); padding-top: 4px;
+  transition: color 0.4s;
+}
+.pf-info { display: flex; flex-direction: column; gap: 10px; }
+.pf-cat-pill {
+  font-family: var(--mono); font-size: 9px; letter-spacing: 0.14em;
+  text-transform: uppercase; padding: 3px 8px; border-radius: 1px;
+  width: fit-content;
+}
+.pf-name {
+  font-size: 20px; font-weight: 700; line-height: 1.2; letter-spacing: -0.01em;
+  transition: color 0.4s;
+}
+.pf-desc {
+  font-size: 13px; color: var(--dim); line-height: 1.7;
+  transition: color 0.4s;
+}
+.pf-tags { display: flex; flex-wrap: wrap; gap: 6px; padding-top: 4px; }
+.pf-tag {
+  font-family: var(--mono); font-size: 8px; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--muted); border: 1px solid var(--border);
+  padding: 4px 9px; border-radius: 1px; transition: all 0.4s;
+}
 
 /* ── ABOUT PANEL ──────────────────────────────────────────── */
 #about-panel {
@@ -847,36 +961,35 @@ body.light #about-bg { background: rgba(0,0,0,0.45); }
     <button class="nf"        onclick="doFilter('art')"    data-cat="art"                >Art</button>
     <button class="nf"        onclick="doFilter('sport')"  data-cat="sport"              >Sport</button>
     <div class="nav-sep"></div>
-    <button class="nav-about" id="navAbout" onclick="openAbout()">About</button>
+    <button class="nav-about" id="navPortfolio" onclick="openPortfolio()">Portfolio</button>
   </div>
 </nav>
 
 <!-- WALL SWITCH -->
 <div id="light-switch" onclick="toggleTheme()" title="Toggle light">
-  <svg class="sw-svg" viewBox="0 0 34 56" fill="none">
-    <!-- Top face of plate (facing up — lighter highlight) -->
-    <path class="sw-depth-t" d="M4 8 L11 5 L34 5 L27 8 Z"/>
-    <!-- Right face of plate (facing right — shadow) -->
-    <path class="sw-depth-r" d="M27 8 L34 5 L34 52 L27 54 Z"/>
-    <!-- Front face of plate -->
-    <rect class="sw-face" x="4" y="8" width="23" height="46" rx="3.5"/>
-    <!-- Dark inset slot — rocker sits in here -->
-    <rect class="sw-slot" x="9" y="15" width="13" height="32" rx="2.5"/>
+  <svg class="sw-svg" viewBox="0 0 44 70" fill="none">
+    <!-- Top depth face (14px deep — strongly visible) -->
+    <path class="sw-depth-t" d="M0 14 L12 0 L44 0 L32 14 Z"/>
+    <!-- Right depth face -->
+    <path class="sw-depth-r" d="M32 14 L44 0 L44 56 L32 70 Z"/>
+    <!-- Front plate -->
+    <rect class="sw-face" x="0" y="14" width="32" height="56" rx="4"/>
+    <!-- Inset slot -->
+    <rect class="sw-slot" x="6" y="23" width="20" height="38" rx="3"/>
     <!-- Rocker group -->
     <g class="sw-rocker-group">
-      <!-- OFF: top sticks OUT toward viewer → top edge wider, bottom narrower -->
-      <!-- Small top-edge face visible (depth face of rocker top) -->
-      <path class="sw-rock-edge sw-rock-edge-off" d="M9 15 L22 15 L23.5 13 L7.5 13 Z"/>
-      <!-- Rocker front face (trapezoid) -->
-      <path class="sw-rock sw-rock-off" d="M9 15 L22 15 L19.5 47 L11.5 47 Z"/>
-      <!-- ON: bottom sticks OUT → bottom edge wider, top narrower -->
-      <path class="sw-rock-edge sw-rock-edge-on" d="M11.5 47 L19.5 47 L21 49 L10 49 Z"/>
-      <path class="sw-rock sw-rock-on"  d="M11.5 15 L19.5 15 L22 47 L9 47 Z"/>
-      <!-- Indicators: which side is "in" (pressed) -->
-      <!-- OFF: bottom is pressed in → indicator at bottom -->
-      <line class="sw-ind sw-ind-off" x1="12.5" y1="42" x2="18.5" y2="42" stroke-width="1.6"/>
-      <!-- ON: top is pressed in → indicator at top -->
-      <line class="sw-ind sw-ind-on"  x1="12.5" y1="20" x2="18.5" y2="20" stroke-width="1.6"/>
+      <!-- OFF: top out toward viewer — large depth edge at top -->
+      <path class="sw-rock-edge sw-rock-edge-off" d="M6 23 L26 23 L30 18 L2 18 Z"/>
+      <path class="sw-rock sw-rock-off" d="M6 23 L26 23 L22.5 61 L9.5 61 Z"/>
+      <!-- ON: bottom out — large depth edge at bottom -->
+      <path class="sw-rock-edge sw-rock-edge-on" d="M9.5 61 L22.5 61 L26.5 66 L5.5 66 Z"/>
+      <path class="sw-rock sw-rock-on"  d="M9.5 23 L22.5 23 L26 61 L6 61 Z"/>
+      <!-- Center pivot line (shows this is a rocker/seesaw) -->
+      <line class="sw-pivot" x1="6" y1="42" x2="26" y2="42" stroke-width="0.9"/>
+      <!-- Indicator: OFF = bottom pressed in, marker at bottom -->
+      <line class="sw-ind sw-ind-off" x1="11" y1="53" x2="21" y2="53" stroke-width="2"/>
+      <!-- Indicator: ON = top pressed in, marker at top -->
+      <line class="sw-ind sw-ind-on"  x1="11" y1="31" x2="21" y2="31" stroke-width="2"/>
     </g>
   </svg>
   <span class="switch-label" id="switchLabel">Off</span>
@@ -903,6 +1016,9 @@ body.light #about-bg { background: rgba(0,0,0,0.45); }
       <span class="self-url">robinsmallenbroek.nl</span>
       <span class="self-arrow">→</span>
     </div>
+  </div>
+  <div class="resize-handle" id="selfResizeHandle">
+    <svg viewBox="0 0 10 10" fill="none"><path d="M1 9L9 1M5 9L9 5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
   </div>
 </div>
 
@@ -933,7 +1049,6 @@ body.light #about-bg { background: rgba(0,0,0,0.45); }
     <h2 id="exp-title"></h2>
     <div id="exp-meta"></div>
     <div id="exp-text"></div>
-    <button id="exp-cta">Volledige post lezen →</button>
     <div id="exp-share">
       <div class="share-lbl">Delen</div>
       <div class="share-btns">
@@ -949,6 +1064,29 @@ body.light #about-bg { background: rgba(0,0,0,0.45); }
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
           Link kopiëren
         </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PORTFOLIO -->
+<div id="portfolio-panel">
+  <div id="pf-bg" onclick="closePortfolio()"></div>
+  <div id="pf-box">
+    <div id="pf-header">
+      <div class="pf-header-left">
+        <span class="pf-title-label">Portfolio</span>
+        <span class="pf-heading">Projecten</span>
+      </div>
+      <button id="pf-x" onclick="closePortfolio()">×</button>
+    </div>
+    <div id="pf-layout">
+      <div id="pf-content">
+        <!-- injected by JS -->
+      </div>
+      <div id="pf-timeline">
+        <div class="pf-tl-line"></div>
+        <!-- injected by JS -->
       </div>
     </div>
   </div>
@@ -1446,7 +1584,7 @@ function closeExp() {
 
 backdrop.addEventListener('click', closeExp);
 document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') { closeExp(); closeAbout(); }
+  if (e.key === 'Escape') { closeExp(); closeAbout(); closePortfolio(); }
 });
 
 // ════════════════════════════════════════════════════════════
@@ -1547,6 +1685,115 @@ function toggleTheme() {
 }
 
 // ════════════════════════════════════════════════════════════
+// PORTFOLIO
+// ════════════════════════════════════════════════════════════
+const PORTFOLIO_PROJECTS = [
+  {
+    id:'p1', year:2026, month:3,
+    cat:'org', color:'var(--org)', label:'Org. Innovatie',
+    title:'Organisatieontwerp Buurtcoöperatie',
+    desc:'Herontwerp van de governance- en besluitvormingsstructuur voor een groeiende energiecoöperatie in Rotterdam. Van bestuurlijk knelpunt naar zelfsturend netwerk van 40 lokale teams.',
+    tags:['Organisatieontwerp', 'Co-creatie', 'Facilitatie'],
+  },
+  {
+    id:'p2', year:2026, month:1,
+    cat:'impact', color:'var(--impact)', label:'Social Impact',
+    title:'Leiderschapstraject — Publiek Domein',
+    desc:'Twaalfwekelijks coachings- en leertraject voor leidinggevenden binnen drie gemeenten. Focus op adaptief leiderschap in complexe omgevingen.',
+    tags:['Coaching', 'Leertraject', 'Publieke sector'],
+  },
+  {
+    id:'p3', year:2025, month:10,
+    cat:'art', color:'var(--art)', label:'Art & Cultuur',
+    title:'Strategisch Plan Culturele Instelling XYZ',
+    desc:'Begeleid proces voor een middelgrote culturele instelling bij het formuleren van een vijfjarige strategie. Stakeholderdialoog, scenarioplanning en bestuurlijke vertaling.',
+    tags:['Strategie', 'Cultuurbeleid', 'Stakeholderproces'],
+  },
+  {
+    id:'p4', year:2025, month:6,
+    cat:'sport', color:'var(--sport)', label:'Sport & Beweeg',
+    title:'Impact Meting Sportprogramma — G40',
+    desc:'Ontwerp en uitvoering van een impactmeting voor een sportprogramma gericht op jongeren in kwetsbare wijken. Kwalitatief en kwantitatief onderzoek in 8 steden.',
+    tags:['Impactmeting', 'Onderzoek', 'Jeugd & Sport'],
+  },
+  {
+    id:'p5', year:2025, month:2,
+    cat:'org', color:'var(--org)', label:'Org. Innovatie',
+    title:'Transformatie Platform-organisatie',
+    desc:'Strategisch advies en procesbegeleiding bij de transitie van een klassieke uitvoeringsorganisatie naar een platform dat derden faciliteert. Van 60 vaste medewerkers naar ecosysteemlogica.',
+    tags:['Platformstrategie', 'Verandermanagement', 'Advies'],
+  },
+];
+
+(function buildPortfolio() {
+  const content  = document.getElementById('pf-content');
+  const timeline = document.getElementById('pf-timeline');
+  const contentH = window.innerHeight; // approximate
+
+  PORTFOLIO_PROJECTS.forEach((p, i) => {
+    // Project card
+    const card = document.createElement('div');
+    card.className = 'pf-project';
+    card.innerHTML = `
+      <div class="pf-year">${p.year}</div>
+      <div class="pf-info">
+        <span class="pf-cat-pill" style="background:color-mix(in srgb,${p.color} 13%,transparent);color:${p.color}">${p.label}</span>
+        <div class="pf-name">${p.title}</div>
+        <div class="pf-desc">${p.desc}</div>
+        <div class="pf-tags">${p.tags.map(t=>`<span class="pf-tag">${t}</span>`).join('')}</div>
+      </div>`;
+    content.appendChild(card);
+  });
+
+  // Build timeline dots (positioned after layout renders)
+  function buildTlDots() {
+    // Remove old dots
+    timeline.querySelectorAll('.pf-tl-item').forEach(d => d.remove());
+    const tlH = timeline.offsetHeight;
+    const N = PORTFOLIO_PROJECTS.length;
+    const padding = 60;
+    PORTFOLIO_PROJECTS.forEach((p, i) => {
+      const cards = content.querySelectorAll('.pf-project');
+      if (!cards[i]) return;
+      const cardTop = cards[i].offsetTop;
+      const contentH = content.scrollHeight;
+      const yPct = Math.min(0.9, Math.max(0.05, (cardTop + 40) / contentH));
+      const yPx = padding + yPct * (tlH - 2 * padding);
+
+      const item = document.createElement('div');
+      item.className = 'pf-tl-item';
+      item.style.top = yPx + 'px';
+
+      const dot = document.createElement('div');
+      dot.className = 'pf-tl-dot';
+      dot.style.background = p.color;
+
+      const yr = document.createElement('div');
+      yr.className = 'pf-tl-year';
+      yr.textContent = p.year;
+
+      item.appendChild(dot);
+      item.appendChild(yr);
+      timeline.appendChild(item);
+    });
+  }
+
+  // Sync timeline dots with content scroll
+  document.getElementById('pf-content').addEventListener('scroll', () => {
+    const scrolled = document.getElementById('pf-content').scrollTop;
+    const scrollH = document.getElementById('pf-content').scrollHeight - document.getElementById('pf-content').clientHeight;
+    const scrollPct = scrollH > 0 ? scrolled / scrollH : 0;
+    // Update progress line height as visual indicator
+  });
+
+  setTimeout(buildTlDots, 80);
+  window.addEventListener('resize', buildTlDots);
+})();
+
+function openPortfolio()  { document.getElementById('portfolio-panel').classList.add('on'); }
+function closePortfolio() { document.getElementById('portfolio-panel').classList.remove('on'); }
+
+// ════════════════════════════════════════════════════════════
 // ABOUT
 // ════════════════════════════════════════════════════════════
 function openAbout()  { document.getElementById('about-panel').classList.add('on'); }
@@ -1584,6 +1831,25 @@ const SELF_POST = {
 <p>Dit is de plek waar die werelden samenkomen — niet als vakje, maar als perspectief op hoe dingen anders kunnen.</p>
 <p>Schrijft over wat de wereld beweegt — en wat haar kan bewegen.</p>`
 };
+
+// Self-card resize
+document.getElementById('selfResizeHandle').addEventListener('mousedown', e => {
+  e.stopPropagation();
+  e.preventDefault();
+  const startX = e.clientX;
+  const startW = selfCard.offsetWidth;
+  document.body.style.cursor = 'nwse-resize';
+  function onMove(ev) {
+    selfCard.style.width = Math.max(180, startW + (ev.clientX - startX)) + 'px';
+  }
+  function onUp() {
+    document.body.style.cursor = '';
+    window.removeEventListener('mousemove', onMove);
+    window.removeEventListener('mouseup', onUp);
+  }
+  window.addEventListener('mousemove', onMove);
+  window.addEventListener('mouseup', onUp);
+});
 
 function openSelf() {
   if (selfCollapsed) return;
@@ -1634,35 +1900,35 @@ function openSelf() {
 // ════════════════════════════════════════════════════════════
 const LANG = {
   en: {
-    all:'All', about:'About', timeline:'Timeline', random:'Random',
+    all:'All', portfolio:'Portfolio', timeline:'Timeline', random:'Random',
     switchOff:'Off', switchOn:'On',
     selfTag:'About the author',
     selfText:'Writes about what moves the world — and what can move it. Organisational innovation, social impact, art & sport.',
-    share:'Share', copyLink:'Copy link', copied:'Copied!', fullPost:'Read full post →',
+    share:'Share', copyLink:'Copy link', copied:'Copied!',
     modeTimeline:'Timeline', modeRandom:'Random',
   },
   nl: {
-    all:'Alle', about:'Over', timeline:'Tijdlijn', random:'Willekeurig',
+    all:'Alle', portfolio:'Portfolio', timeline:'Tijdlijn', random:'Willekeurig',
     switchOff:'Uit', switchOn:'Aan',
     selfTag:'Over de auteur',
     selfText:'Schrijft over wat de wereld beweegt — en wat haar kan bewegen. Organisatorische innovatie, social impact, kunst & sport.',
-    share:'Delen', copyLink:'Link kopiëren', copied:'Gekopieerd!', fullPost:'Volledige post lezen →',
+    share:'Delen', copyLink:'Link kopiëren', copied:'Gekopieerd!',
     modeTimeline:'Tijdlijn', modeRandom:'Willekeurig',
   },
   es: {
-    all:'Todo', about:'Sobre', timeline:'Cronología', random:'Aleatorio',
+    all:'Todo', portfolio:'Portfolio', timeline:'Cronología', random:'Aleatorio',
     switchOff:'Apag.', switchOn:'Enc.',
     selfTag:'Sobre el autor',
     selfText:'Escribe sobre lo que mueve al mundo — e innovación organizacional, impacto social, arte & deporte.',
-    share:'Compartir', copyLink:'Copiar enlace', copied:'¡Copiado!', fullPost:'Leer artículo completo →',
+    share:'Compartir', copyLink:'Copiar enlace', copied:'¡Copiado!',
     modeTimeline:'Cronología', modeRandom:'Aleatorio',
   },
   zh: {
-    all:'全部', about:'关于', timeline:'时间线', random:'随机',
+    all:'全部', portfolio:'作品集', timeline:'时间线', random:'随机',
     switchOff:'关', switchOn:'开',
     selfTag:'关于作者',
     selfText:'写关于推动世界的事 — 组织创新、社会影响、艺术与体育。',
-    share:'分享', copyLink:'复制链接', copied:'已复制！', fullPost:'阅读完整文章 →',
+    share:'分享', copyLink:'复制链接', copied:'已复制！',
     modeTimeline:'时间线', modeRandom:'随机',
   },
 };
@@ -1671,11 +1937,11 @@ let currentLang = 'en';
 
 function setLanguage(lang) {
   currentLang = lang;
-  const t = LANG[lang];
+  const t = LANG[lang] || LANG.en;
 
   // Nav
   document.getElementById('nf-all').textContent = t.all;
-  document.getElementById('navAbout').textContent = t.about;
+  document.getElementById('navPortfolio').textContent = t.portfolio;
 
   // Switch label
   document.getElementById('switchLabel').textContent = isLight ? t.switchOn : t.switchOff;
@@ -1687,15 +1953,13 @@ function setLanguage(lang) {
   document.querySelector('.self-tag').textContent = t.selfTag;
   document.querySelector('.self-text').textContent = t.selfText;
 
-  // Expander share / CTA (update live if open)
+  // Expander share (update live if open)
   const shareBtn = document.getElementById('share-copy');
   if (shareBtn && !shareBtn.classList.contains('copied')) {
     shareBtn.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> ${t.copyLink}`;
   }
   const shareLbl = document.querySelector('.share-lbl');
   if (shareLbl) shareLbl.textContent = t.share;
-  const ctaBtn = document.getElementById('exp-cta');
-  if (ctaBtn) ctaBtn.textContent = t.fullPost;
 
   // Dropdown: update active state
   document.querySelectorAll('.lang-opt').forEach(o =>
