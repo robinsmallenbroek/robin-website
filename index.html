@@ -148,7 +148,7 @@ body.light nav { background: rgba(230,227,221,0.88); }
 }
 .nav-about:hover { color: var(--text); }
 
-/* ── WALL SWITCH (3D illustrated style) ──────────────────── */
+/* ── WALL SWITCH (cartoon toggle style) ──────────────────── */
 #light-switch {
   position: fixed;
   top: 62px; left: 18px;
@@ -157,79 +157,89 @@ body.light nav { background: rgba(230,227,221,0.88); }
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 4px;
+  gap: 5px;
   user-select: none;
 }
 
 .sw-svg {
-  width: 40px; height: 62px;
+  width: 38px; height: 58px;
   overflow: visible;
   color: var(--text);
   transition: color 0.4s;
 }
 
-/* Plate depth faces */
+/* Plate — 3D box, isometric depth faces */
 .sw-depth-t {
-  fill: var(--muted); opacity: 0.55;
-  stroke: currentColor; stroke-width: 1.0; stroke-linejoin: round;
+  fill: var(--muted); opacity: 0.6;
+  stroke: currentColor; stroke-width: 1.2; stroke-linejoin: round;
   transition: fill 0.4s;
 }
-body.light .sw-depth-t { opacity: 0.35; }
+body.light .sw-depth-t { opacity: 0.3; }
 .sw-depth-r {
-  fill: var(--border);
-  stroke: currentColor; stroke-width: 1.0; stroke-linejoin: round;
+  fill: var(--muted); opacity: 0.35;
+  stroke: currentColor; stroke-width: 1.2; stroke-linejoin: round;
   transition: fill 0.4s;
 }
-/* Front plate */
+body.light .sw-depth-r { opacity: 0.18; }
+
+/* Front plate — bold cartoon outline */
 .sw-face {
   fill: var(--card);
-  stroke: currentColor; stroke-width: 1.4;
+  stroke: currentColor; stroke-width: 2;
   transition: fill 0.4s;
 }
-/* Dark inset slot — shows rocker is physically mounted */
+
+/* Pill-shaped inset slot */
 .sw-slot {
-  fill: rgba(0,0,0,0.38);
+  fill: rgba(0,0,0,0.45);
+  stroke: currentColor; stroke-width: 1.2;
   transition: fill 0.4s;
 }
-body.light .sw-slot { fill: rgba(0,0,0,0.16); }
+body.light .sw-slot { fill: rgba(0,0,0,0.18); }
 
-/* Rocker group flip animation */
-.sw-rocker-group { }
-@keyframes sw-flip {
-  0%, 100% { opacity: 1; }
-  28%, 72%  { opacity: 0; }
+/* Toggle paddle — scaleY squeeze animation for flip feel */
+.sw-rocker-group {
+  transform-box: fill-box;
+  transform-origin: center;
 }
-.sw-svg.sw-flipping .sw-rocker-group { animation: sw-flip 0.34s ease; }
+@keyframes sw-flip {
+  0%   { opacity: 1; transform: scaleY(1); }
+  30%  { opacity: 0; transform: scaleY(0.06); }
+  70%  { opacity: 0; transform: scaleY(0.06); }
+  100% { opacity: 1; transform: scaleY(1); }
+}
+.sw-svg.sw-flipping .sw-rocker-group {
+  animation: sw-flip 0.38s cubic-bezier(0.4, 0, 0.6, 1);
+}
 
-/* Rocker front face — trapezoid showing perspective tilt */
+/* Paddle front face */
 .sw-rock {
-  stroke: currentColor; stroke-width: 1.1; stroke-linejoin: round;
+  stroke: currentColor; stroke-width: 1.6; stroke-linejoin: round;
   fill: var(--bg);
   transition: fill 0.4s;
 }
-/* Small visible depth-face of rocker (the edge coming toward viewer) */
+/* Paddle depth face — the protruding edge */
 .sw-rock-edge {
-  stroke: currentColor; stroke-width: 0.9; stroke-linejoin: round;
-  fill: var(--border);
+  stroke: currentColor; stroke-width: 1.2; stroke-linejoin: round;
+  fill: var(--muted);
   transition: fill 0.4s;
 }
-body.light .sw-rock-edge { fill: rgba(255,255,255,0.55); }
+body.light .sw-rock-edge { fill: rgba(0,0,0,0.12); }
 
-.sw-rock-off, .sw-rock-edge-off { opacity: 1; transition: opacity 0.15s; }
-.sw-rock-on,  .sw-rock-edge-on  { opacity: 0; transition: opacity 0.15s; }
+.sw-rock-off, .sw-rock-edge-off { opacity: 1; }
+.sw-rock-on,  .sw-rock-edge-on  { opacity: 0; }
 body.light .sw-rock-off, body.light .sw-rock-edge-off { opacity: 0; }
 body.light .sw-rock-on,  body.light .sw-rock-edge-on  { opacity: 1; }
 
-/* Pivot center line */
-.sw-pivot { stroke: currentColor; opacity: 0.18; stroke-dasharray: 2 2; }
-body.light .sw-pivot { opacity: 0.12; }
+/* Center pivot mark */
+.sw-pivot { stroke: currentColor; opacity: 0.20; stroke-dasharray: 2 2; }
 
-/* Indicator bars */
+/* Indicator bar (I-mark) */
 .sw-ind { stroke: currentColor; stroke-linecap: round; }
-.sw-ind-off { opacity: 0.85; transition: opacity 0.15s; }
-.sw-ind-on  { opacity: 0.12; transition: opacity 0.15s; }
-body.light .sw-ind-off { opacity: 0.12; }
-body.light .sw-ind-on  { opacity: 0.85; }
+.sw-ind-off { opacity: 0.75; }
+.sw-ind-on  { opacity: 0.08; }
+body.light .sw-ind-off { opacity: 0.08; }
+body.light .sw-ind-on  { opacity: 0.75; }
 
 /* Label */
 .switch-label {
@@ -967,29 +977,48 @@ body.light #about-bg { background: rgba(0,0,0,0.45); }
 
 <!-- WALL SWITCH -->
 <div id="light-switch" onclick="toggleTheme()" title="Toggle light">
-  <svg class="sw-svg" viewBox="0 0 44 70" fill="none">
-    <!-- Top depth face (14px deep — strongly visible) -->
-    <path class="sw-depth-t" d="M0 14 L12 0 L44 0 L32 14 Z"/>
-    <!-- Right depth face -->
-    <path class="sw-depth-r" d="M32 14 L44 0 L44 56 L32 70 Z"/>
-    <!-- Front plate -->
-    <rect class="sw-face" x="0" y="14" width="32" height="56" rx="4"/>
-    <!-- Inset slot -->
-    <rect class="sw-slot" x="6" y="23" width="20" height="38" rx="3"/>
-    <!-- Rocker group -->
+  <!--
+    Cartoon toggle switch: viewBox 0 0 44 66
+    Plate: 28×54 front face, 7px isometric depth
+    Slot: pill-shaped oval in plate centre
+    Paddle: trapezoid that tapers — wider at the protruding end
+      OFF (dark) = bottom protrudes → wider at bottom, bottom depth face
+      ON  (light) = top protrudes  → wider at top,    top depth face
+  -->
+  <svg class="sw-svg" viewBox="0 0 44 66" fill="none">
+    <!-- Plate top depth face (7px step — clear isometric look) -->
+    <path class="sw-depth-t" d="M2 8 L8 2 L36 2 L30 8 Z"/>
+    <!-- Plate right depth face -->
+    <path class="sw-depth-r" d="M30 8 L36 2 L36 60 L30 62 Z"/>
+    <!-- Front plate face -->
+    <rect class="sw-face" x="2" y="8" width="28" height="54" rx="5"/>
+    <!-- Pill-shaped slot (oval housing) -->
+    <rect class="sw-slot" x="8" y="17" width="16" height="32" rx="8"/>
+    <!-- Toggle paddle group (animated on flip) -->
     <g class="sw-rocker-group">
-      <!-- OFF: top out toward viewer — large depth edge at top -->
-      <path class="sw-rock-edge sw-rock-edge-off" d="M6 23 L26 23 L30 18 L2 18 Z"/>
-      <path class="sw-rock sw-rock-off" d="M6 23 L26 23 L22.5 61 L9.5 61 Z"/>
-      <!-- ON: bottom out — large depth edge at bottom -->
-      <path class="sw-rock-edge sw-rock-edge-on" d="M9.5 61 L22.5 61 L26.5 66 L5.5 66 Z"/>
-      <path class="sw-rock sw-rock-on"  d="M9.5 23 L22.5 23 L26 61 L6 61 Z"/>
-      <!-- Center pivot line (shows this is a rocker/seesaw) -->
-      <line class="sw-pivot" x1="6" y1="42" x2="26" y2="42" stroke-width="0.9"/>
-      <!-- Indicator: OFF = bottom pressed in, marker at bottom -->
-      <line class="sw-ind sw-ind-off" x1="11" y1="53" x2="21" y2="53" stroke-width="2"/>
-      <!-- Indicator: ON = top pressed in, marker at top -->
-      <line class="sw-ind sw-ind-on"  x1="11" y1="31" x2="21" y2="31" stroke-width="2"/>
+      <!--
+        OFF state: bottom half of paddle pushes toward viewer
+        → front face wider at bottom, bottom depth face visible
+      -->
+      <path class="sw-rock sw-rock-off"
+            d="M11 17 L21 17 L24 49 L8 49 Z"/>
+      <path class="sw-rock-edge sw-rock-edge-off"
+            d="M8 49 L24 49 L26 53 L6 53 Z"/>
+      <!--
+        ON state: top half pushes toward viewer
+        → front face wider at top, top depth face visible
+      -->
+      <path class="sw-rock sw-rock-on"
+            d="M8 17 L24 17 L21 49 L11 49 Z"/>
+      <path class="sw-rock-edge sw-rock-edge-on"
+            d="M8 17 L24 17 L22 13 L10 13 Z"/>
+      <!-- Center pivot line (shows rocker rotates around this axis) -->
+      <line class="sw-pivot" x1="8" y1="33" x2="24" y2="33" stroke-width="1"/>
+      <!-- I-mark indicator: visible on the PRESSED/receding end -->
+      <!-- OFF: top is receding → I at top -->
+      <line class="sw-ind sw-ind-off" x1="13" y1="23" x2="19" y2="23" stroke-width="2.2"/>
+      <!-- ON: bottom is receding → I at bottom -->
+      <line class="sw-ind sw-ind-on"  x1="13" y1="44" x2="19" y2="44" stroke-width="2.2"/>
     </g>
   </svg>
   <span class="switch-label" id="switchLabel">Off</span>
