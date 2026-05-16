@@ -1684,23 +1684,23 @@ const CANVAS_W = 3500;
 
 // Timeline quarter definitions (x = left edge of quarter zone)
 const QUARTERS = [
-  { key:'Q42025', label:'Q4', year:2025, q:4, x: 180,  xEnd: 960  },
-  { key:'Q12026', label:'Q1', year:2026, q:1, x: 1060, xEnd: 2280 },
-  { key:'Q22026', label:'Q2', year:2026, q:2, x: 2380, xEnd: 3300 },
+  { key:'Q22026', label:'Q2', year:2026, q:2, x: 180,  xEnd: 700  },  // nieuwste links
+  { key:'Q12026', label:'Q1', year:2026, q:1, x: 700,  xEnd: 2080 },
+  { key:'Q42025', label:'Q4', year:2025, q:4, x: 2080, xEnd: 3300 },  // oudste rechts
 ];
 
 // Timeline positions (hand-tuned per post for nice spread)
 const TIMELINE_POS = {
-  8: { x: 200,  yp: 0.10 },  // Nov 2025
-  7: { x: 570,  yp: 0.14 },  // Dec 2025
-  4: { x: 1080, yp: 0.10 },  // Jan 10 2026
-  6: { x: 1320, yp: 0.08 },  // Jan 28 2026
-  5: { x: 1580, yp: 0.13 },  // Feb 14 2026
-  3: { x: 1820, yp: 0.09 },  // Mar 1 2026
-  9: { x: 1940, yp: 0.12 },  // Mar 20 2026 (video)
-  1: { x: 2100, yp: 0.11 },  // Mar 22 2026
-  2: { x: 2420, yp: 0.09 },  // Apr 9 2026
-  0: { x: 2720, yp: 0.08 },  // May 14 2026
+  0: { x: 200,  yp: 0.08 },  // May 14 2026 (nieuwste)
+  2: { x: 500,  yp: 0.09 },  // Apr 9 2026
+  1: { x: 820,  yp: 0.11 },  // Mar 22 2026
+  9: { x: 980,  yp: 0.12 },  // Mar 20 2026 (video)
+  3: { x: 1100, yp: 0.09 },  // Mar 1 2026
+  5: { x: 1340, yp: 0.13 },  // Feb 14 2026
+  6: { x: 1600, yp: 0.08 },  // Jan 28 2026
+  4: { x: 1840, yp: 0.10 },  // Jan 10 2026
+  7: { x: 2350, yp: 0.14 },  // Dec 2025
+  8: { x: 2720, yp: 0.10 },  // Nov 2025 (oudste)
 };
 
 // Random positions — generated fresh each time
@@ -1799,7 +1799,7 @@ const tlEl = document.createElement('div');
 tlEl.id = 'timeline';
 
 // Year labels
-[{year:2025, x:180}, {year:2026, x:1060}].forEach(({year, x}) => {
+[{year:2026, x:180}, {year:2025, x:2080}].forEach(({year, x}) => {
   const d = document.createElement('div');
   d.className = 'tl-year-label';
   d.style.left = x + 'px';
@@ -2245,7 +2245,7 @@ let _pfTypewriter = null;
 
   function dateToY(yr, mo) {
     const v = yr + mo / 12;
-    return PAD_T + ((v - D_START) / (D_END - D_START)) * (INNER_H - PAD_T - PAD_B);
+    return PAD_T + ((D_END - v) / (D_END - D_START)) * (INNER_H - PAD_T - PAD_B);
   }
 
   // ── Typewriter text (centred above first card) ──
@@ -2302,9 +2302,9 @@ let _pfTypewriter = null;
     innerEl.appendChild(tick);
   });
 
-  // ── Cards — sorted oldest → newest ──
+  // ── Cards — sorted newest → oldest ──
   const sorted = [...PORTFOLIO_PROJECTS].sort(
-    (a, b) => (a.year * 12 + a.month) - (b.year * 12 + b.month)
+    (a, b) => (b.year * 12 + b.month) - (a.year * 12 + a.month)
   );
 
   const X_FRACS = [0.03, 0.40, 0.12, 0.55, 0.05];
